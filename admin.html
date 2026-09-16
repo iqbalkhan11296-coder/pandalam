@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Chaat Shop Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js?v=1"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#160005;
+    color:white;
+    font-family:Arial,sans-serif;
+}
+
+header{
+    background:#4b001f;
+    padding:20px;
+    text-align:center;
+    border-bottom:1px solid #d6a84f;
+}
+
+header h1{
+    margin:0;
+    color:#f5d27a;
+    font-family:Georgia,serif;
+    letter-spacing:3px;
+}
+
+header p{
+    margin:6px 0 0;
+    color:#d9bd78;
+    font-size:12px;
+    letter-spacing:2px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    gap:10px;
+}
+
+.date{
+    color:#f5d27a;
+    font-size:14px;
+}
+
+.refresh{
+    border:1px solid #d6a84f;
+    background:#29000e;
+    color:#f5d27a;
+    padding:10px 18px;
+    border-radius:7px;
+    font-weight:bold;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:linear-gradient(145deg,#310011,#180006);
+    border:1px solid #9d7629;
+    border-radius:12px;
+    padding:18px;
+}
+
+.card-title{
+    color:#c9ad70;
+    font-size:13px;
+}
+
+.card-value{
+    color:#f5d27a;
+    font-size:28px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.section-title{
+    font-family:Georgia,serif;
+    color:#f5d27a;
+    font-size:22px;
+    margin:25px 0 12px;
+}
+
+.table-container{
+    overflow-x:auto;
+    background:#f8f4ea;
+    color:#222;
+    border-radius:10px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:800px;
+}
+
+th{
+    background:#4b001f;
+    color:#f5d27a;
+    padding:12px;
+    text-align:left;
+}
+
+td{
+    padding:11px;
+    border-bottom:1px solid #ddd;
+}
+
+.status{
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+    background:#eee;
+}
+
+.empty{
+    text-align:center;
+    padding:30px;
+    color:#777;
+}
+
+.error{
+    background:#5b0015;
+    border:1px solid #ff7777;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:15px;
+    display:none;
+}
+
+@media(max-width:600px){
+
+    .container{
+        padding:12px;
+    }
+
+    .topbar{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .card-value{
+        font-size:24px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>CHAATARRA</h1>
+
+<p>ADMIN DASHBOARD</p>
+
+</header>
+
+
+<div class="container">
+
+<div class="topbar">
+
+<div class="date"
+id="todayDate">
+Loading...
+</div>
+
+<button
+class="refresh"
+onclick="loadDashboard()">
+
+↻ REFRESH
+
+</button>
+
+</div>
+
+
+<div id="errorBox"
+class="error">
+</div>
+
+
+<div class="cards">
+
+<div class="card">
+
+<div class="card-title">
+TODAY'S SALES
+</div>
+
+<div class="card-value"
+id="todaySales">
+₹0
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+TOTAL ORDERS
+</div>
+
+<div class="card-value"
+id="todayOrders">
+0
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+CASH
+</div>
+
+<div class="card-value"
+id="cashSales">
+₹0
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+UPI
+</div>
+
+<div class="card-value"
+id="upiSales">
+₹0
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+CARD
+</div>
+
+<div class="card-value"
+id="cardSales">
+₹0
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+ITEMS SOLD
+</div>
+
+<div class="card-value"
+id="itemsSold">
+0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="section-title">
+TODAY'S ORDERS
+</div>
+
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Order</th>
+
+<th>Time</th>
+
+<th>Customer</th>
+
+<th>Table</th>
+
+<th>Items</th>
+
+<th>Payment</th>
+
+<th>Total</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody id="ordersTable">
+
+<tr>
+
+<td colspan="8"
+class="empty">
+
+Loading orders...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<script>
+
+
+function getTodayStart(){
+
+    const now = new Date();
+
+    return new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    ).toISOString();
+
+}
+
+
+function formatTime(date){
+
+    return new Date(date)
+        .toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        );
+
+}
+
+
+function formatDate(){
+
+    return new Date()
+        .toLocaleDateString(
+            "en-IN",
+            {
+                weekday:"long",
+                year:"numeric",
+                month:"long",
+                day:"numeric"
+            }
+        );
+
+}
+
+
+async function loadDashboard(){
+
+    document.getElementById(
+        "errorBox"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "todayDate"
+    ).textContent=formatDate();
+
+
+    const start =
+        getTodayStart();
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("chaat_orders")
+        .select("*")
+        .gte(
+            "created_at",
+            start
+        )
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        showError(
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    calculateStats(data || []);
+
+    displayOrders(data || []);
+
+}
+
+
+function calculateStats(orders){
+
+    let sales=0;
+
+    let cash=0;
+
+    let upi=0;
+
+    let card=0;
+
+    let items=0;
+
+
+    orders.forEach(order=>{
+
+        const total =
+            Number(order.total || 0);
+
+        sales += total;
+
+
+        if(order.payment_method==="Cash"){
+            cash += total;
+        }
+
+        if(order.payment_method==="UPI"){
+            upi += total;
+        }
+
+        if(order.payment_method==="Card"){
+            card += total;
+        }
+
+
+        if(Array.isArray(order.items)){
+
+            order.items.forEach(item=>{
+
+                items +=
+                    Number(item.qty || 0);
+
+            });
+
+        }
+
+    });
+
+
+    document.getElementById(
+        "todaySales"
+    ).textContent =
+        "₹"+sales;
+
+
+    document.getElementById(
+        "todayOrders"
+    ).textContent =
+        orders.length;
+
+
+    document.getElementById(
+        "cashSales"
+    ).textContent =
+        "₹"+cash;
+
+
+    document.getElementById(
+        "upiSales"
+    ).textContent =
+        "₹"+upi;
+
+
+    document.getElementById(
+        "cardSales"
+    ).textContent =
+        "₹"+card;
+
+
+    document.getElementById(
+        "itemsSold"
+    ).textContent =
+        items;
+
+}
+
+
+function displayOrders(orders){
+
+    const tbody =
+        document.getElementById(
+            "ordersTable"
+        );
+
+
+    if(orders.length===0){
+
+        tbody.innerHTML=`
+
+            <tr>
+
+                <td
+                colspan="8"
+                class="empty">
+
+                    No orders today
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        orders.map(order=>{
+
+            let itemText="";
+
+            if(Array.isArray(order.items)){
+
+                itemText =
+                    order.items
+                    .map(item =>
+                        `${escapeHtml(item.name)}
+                        ×${item.qty}`
+                    )
+                    .join("<br>");
+
+            }
+
+
+            return `
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            #${order.order_number}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${formatTime(
+                            order.created_at
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            order.customer_name ||
+                            "Walk-in Customer"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            order.table_number || "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${itemText}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            order.payment_method ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ₹${Number(
+                                order.total || 0
+                            )}
+                        </strong>
+                    </td>
+
+                    <td>
+                        <span class="status">
+                            ${escapeHtml(
+                                order.status ||
+                                "Pending"
+                            )}
+                        </span>
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+}
+
+
+function showError(message){
+
+    const box =
+        document.getElementById(
+            "errorBox"
+        );
+
+    box.textContent =
+        "Error: "+message;
+
+    box.style.display="block";
+
+}
+
+
+function escapeHtml(text){
+
+    return String(text)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+loadDashboard();
+
+</script>
+
+</body>
+
+</html>
