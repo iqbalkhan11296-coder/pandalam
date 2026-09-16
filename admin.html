@@ -50,20 +50,18 @@ header p{
 .container{
     max-width:1200px;
     margin:auto;
-    padding:20px;
+    padding:18px;
 }
 
 .topbar{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:20px;
-    gap:10px;
+    margin-bottom:18px;
 }
 
 .date{
     color:#f5d27a;
-    font-size:14px;
 }
 
 .refresh{
@@ -80,7 +78,7 @@ header p{
     grid-template-columns:
     repeat(auto-fit,minmax(180px,1fr));
     gap:12px;
-    margin-bottom:25px;
+    margin-bottom:20px;
 }
 
 .card{
@@ -97,79 +95,169 @@ header p{
 
 .card-value{
     color:#f5d27a;
-    font-size:28px;
+    font-size:27px;
     font-weight:bold;
     margin-top:8px;
 }
 
 .section-title{
-    font-family:Georgia,serif;
     color:#f5d27a;
+    font-family:Georgia,serif;
     font-size:22px;
-    margin:25px 0 12px;
+    margin:28px 0 12px;
 }
 
-.table-container{
-    overflow-x:auto;
+.panel{
     background:#f8f4ea;
     color:#222;
     border-radius:10px;
+    padding:15px;
+    margin-bottom:20px;
+}
+
+.form{
+    display:grid;
+    grid-template-columns:
+    1.5fr 1fr .7fr auto;
+    gap:8px;
+}
+
+.form input,
+.form select{
+    padding:11px;
+    border:1px solid #aaa;
+    border-radius:6px;
+    width:100%;
+}
+
+.button{
+    background:#4b001f;
+    color:#f5d27a;
+    border:none;
+    border-radius:6px;
+    padding:10px 16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.button:hover{
+    opacity:.9;
+}
+
+.cancel{
+    background:#777;
+    color:white;
+    display:none;
 }
 
 table{
     width:100%;
     border-collapse:collapse;
-    min-width:800px;
 }
 
 th{
     background:#4b001f;
     color:#f5d27a;
-    padding:12px;
+    padding:11px;
     text-align:left;
 }
 
 td{
-    padding:11px;
+    padding:10px;
     border-bottom:1px solid #ddd;
 }
 
-.status{
-    padding:5px 9px;
-    border-radius:20px;
-    font-size:12px;
-    font-weight:bold;
-    background:#eee;
+.action{
+    display:flex;
+    gap:6px;
+}
+
+.edit{
+    border:none;
+    background:#765900;
+    color:white;
+    padding:6px 10px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.delete{
+    border:none;
+    background:#8b0000;
+    color:white;
+    padding:6px 10px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.toggle{
+    border:none;
+    padding:6px 10px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.available{
+    background:#176b3a;
+    color:white;
+}
+
+.unavailable{
+    background:#777;
+    color:white;
+}
+
+.error{
+    display:none;
+    background:#5b0015;
+    border:1px solid #ff7777;
+    padding:12px;
+    border-radius:7px;
+    margin-bottom:15px;
 }
 
 .empty{
     text-align:center;
-    padding:30px;
     color:#777;
+    padding:25px;
 }
 
-.error{
-    background:#5b0015;
-    border:1px solid #ff7777;
-    padding:15px;
-    border-radius:8px;
-    margin-bottom:15px;
-    display:none;
+.status{
+    margin-top:10px;
+    color:#555;
+    font-size:13px;
 }
 
-@media(max-width:600px){
+@media(max-width:800px){
+
+    .form{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:500px){
 
     .container{
         padding:12px;
     }
 
     .topbar{
-        align-items:flex-start;
         flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
     }
 
-    .card-value{
-        font-size:24px;
+    .form{
+        grid-template-columns:1fr;
+    }
+
+    .panel{
+        overflow-x:auto;
+    }
+
+    table{
+        min-width:700px;
     }
 
 }
@@ -188,19 +276,19 @@ td{
 
 </header>
 
-
 <div class="container">
 
 <div class="topbar">
 
-<div class="date"
+<div
+class="date"
 id="todayDate">
 Loading...
 </div>
 
 <button
 class="refresh"
-onclick="loadDashboard()">
+onclick="loadAll()">
 
 ↻ REFRESH
 
@@ -208,11 +296,10 @@ onclick="loadDashboard()">
 
 </div>
 
-
-<div id="errorBox"
+<div
+id="errorBox"
 class="error">
 </div>
-
 
 <div class="cards">
 
@@ -222,69 +309,27 @@ class="error">
 TODAY'S SALES
 </div>
 
-<div class="card-value"
+<div
+class="card-value"
 id="todaySales">
 ₹0
 </div>
 
 </div>
 
-
 <div class="card">
 
 <div class="card-title">
-TOTAL ORDERS
+ORDERS
 </div>
 
-<div class="card-value"
+<div
+class="card-value"
 id="todayOrders">
 0
 </div>
 
 </div>
-
-
-<div class="card">
-
-<div class="card-title">
-CASH
-</div>
-
-<div class="card-value"
-id="cashSales">
-₹0
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="card-title">
-UPI
-</div>
-
-<div class="card-value"
-id="upiSales">
-₹0
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="card-title">
-CARD
-</div>
-
-<div class="card-value"
-id="cardSales">
-₹0
-</div>
-
-</div>
-
 
 <div class="card">
 
@@ -292,10 +337,204 @@ id="cardSales">
 ITEMS SOLD
 </div>
 
-<div class="card-value"
+<div
+class="card-value"
 id="itemsSold">
 0
 </div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+TODAY'S EXPENSES
+</div>
+
+<div
+class="card-value"
+id="todayExpenses">
+₹0
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-title">
+NET PROFIT
+</div>
+
+<div
+class="card-value"
+id="netProfit">
+₹0
+</div>
+
+</div>
+
+</div>
+
+<div class="section-title">
+PRODUCT MANAGER
+</div>
+
+<div class="panel">
+
+<div class="form">
+
+<input
+id="productName"
+type="text"
+placeholder="Product name">
+
+<select id="productCategory">
+
+<option value="Chaat">
+Chaat
+</option>
+
+<option value="Drinks">
+Drinks
+</option>
+
+<option value="Combos">
+Combos
+</option>
+
+</select>
+
+<input
+id="productPrice"
+type="number"
+min="0"
+placeholder="Price">
+
+<button
+class="button"
+id="saveProductButton"
+onclick="saveProduct()">
+
+ADD PRODUCT
+
+</button>
+
+<button
+class="button cancel"
+id="cancelButton"
+onclick="cancelEdit()">
+
+CANCEL
+
+</button>
+
+</div>
+
+<div
+class="status"
+id="productStatus">
+</div>
+
+</div>
+
+<div class="panel">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Product</th>
+<th>Category</th>
+<th>Price</th>
+<th>Availability</th>
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody id="productsTable">
+
+<tr>
+
+<td
+colspan="5"
+class="empty">
+
+Loading products...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+<!-- EXPENSE MANAGER -->
+
+<div class="section-title">
+ADD EXPENSE
+</div>
+
+<div class="panel">
+
+<div class="form">
+
+<input
+id="expenseName"
+type="text"
+placeholder="Expense name">
+
+<select id="expenseCategory">
+
+<option value="Ingredients">
+Ingredients
+</option>
+
+<option value="Gas">
+Gas
+</option>
+
+<option value="Rent">
+Rent
+</option>
+
+<option value="Electricity">
+Electricity
+</option>
+
+<option value="Staff">
+Staff
+</option>
+
+<option value="Other">
+Other
+</option>
+
+</select>
+
+<input
+id="expenseAmount"
+type="number"
+min="0"
+placeholder="Amount">
+
+<input
+id="expenseNotes"
+type="text"
+placeholder="Notes">
+
+<button
+class="button"
+onclick="addExpense()">
+
+ADD EXPENSE
+
+</button>
 
 </div>
 
@@ -303,11 +542,55 @@ id="itemsSold">
 
 
 <div class="section-title">
-TODAY'S ORDERS
+TODAY'S EXPENSES
+</div>
+
+<div class="panel">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Expense</th>
+<th>Category</th>
+<th>Amount</th>
+<th>Notes</th>
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="expenseTable">
+
+<tr>
+
+<td
+colspan="5"
+class="empty">
+
+Loading...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
 </div>
 
 
-<div class="table-container">
+<!-- ORDERS -->
+
+<div class="section-title">
+TODAY'S ORDERS
+</div>
+
+<div class="panel">
 
 <table>
 
@@ -316,19 +599,11 @@ TODAY'S ORDERS
 <tr>
 
 <th>Order</th>
-
 <th>Time</th>
-
 <th>Customer</th>
-
 <th>Table</th>
-
-<th>Items</th>
-
 <th>Payment</th>
-
 <th>Total</th>
-
 <th>Status</th>
 
 </tr>
@@ -339,10 +614,11 @@ TODAY'S ORDERS
 
 <tr>
 
-<td colspan="8"
+<td
+colspan="7"
 class="empty">
 
-Loading orders...
+Loading...
 
 </td>
 
@@ -360,7 +636,14 @@ Loading orders...
 <script>
 
 
-function getTodayStart(){
+let editingProductId = null;
+
+
+/* =========================
+   DATE
+========================= */
+
+function todayStart(){
 
     const now = new Date();
 
@@ -373,24 +656,88 @@ function getTodayStart(){
 }
 
 
-function formatTime(date){
+function tomorrowStart(){
 
-    return new Date(date)
-        .toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit"
-            }
-        );
+    const now = new Date();
+
+    return new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()+1
+    ).toISOString();
 
 }
 
 
-function formatDate(){
+/* =========================
+   MONEY
+========================= */
 
-    return new Date()
-        .toLocaleDateString(
+function money(value){
+
+    return Number(value || 0)
+        .toFixed(2)
+        .replace(/\.00$/,"");
+
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+function showError(message){
+
+    const box =
+        document.getElementById(
+            "errorBox"
+        );
+
+    box.textContent =
+        "Error: " + message;
+
+    box.style.display = "block";
+
+}
+
+
+function clearError(){
+
+    document.getElementById(
+        "errorBox"
+    ).style.display = "none";
+
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHtml(text){
+
+    return String(text ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   LOAD EVERYTHING
+========================= */
+
+async function loadAll(){
+
+    clearError();
+
+    document.getElementById(
+        "todayDate"
+    ).textContent =
+        new Date().toLocaleDateString(
             "en-IN",
             {
                 weekday:"long",
@@ -400,24 +747,487 @@ function formatDate(){
             }
         );
 
+
+    await loadProducts();
+
+    await loadOrders();
+
+    await loadExpenses();
+
 }
 
 
-async function loadDashboard(){
+/* =========================
+   LOAD PRODUCTS
+========================= */
+
+async function loadProducts(){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("chaat_products")
+        .select("*")
+        .order(
+            "category",
+            {
+                ascending:true
+            }
+        )
+        .order(
+            "name",
+            {
+                ascending:true
+            }
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        showError(
+            "Products: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    displayProducts(
+        data || []
+    );
+
+}
+
+
+/* =========================
+   DISPLAY PRODUCTS
+========================= */
+
+function displayProducts(products){
+
+    const tbody =
+        document.getElementById(
+            "productsTable"
+        );
+
+
+    if(!products.length){
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                colspan="5"
+                class="empty">
+
+                    No products yet.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        products.map(product => {
+
+            const available =
+                product.available !== false;
+
+
+            return `
+
+                <tr>
+
+                    <td>
+                        ${escapeHtml(
+                            product.name
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            product.category
+                        )}
+                    </td>
+
+                    <td>
+                        ₹${money(
+                            product.price
+                        )}
+                    </td>
+
+                    <td>
+
+                        <button
+                        class="toggle ${
+                            available
+                            ? "available"
+                            : "unavailable"
+                        }"
+                        onclick="toggleProduct(
+                            ${product.id},
+                            ${available}
+                        )">
+
+                        ${
+                            available
+                            ? "AVAILABLE"
+                            : "UNAVAILABLE"
+                        }
+
+                        </button>
+
+                    </td>
+
+                    <td>
+
+                        <div class="action">
+
+                            <button
+                            class="edit"
+                            onclick='editProduct(
+                                ${JSON.stringify(product)}
+                            )'>
+
+                            EDIT
+
+                            </button>
+
+
+                            <button
+                            class="delete"
+                            onclick="deleteProduct(
+                                ${product.id}
+                            )">
+
+                            DELETE
+
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+}
+
+
+/* =========================
+   SAVE PRODUCT
+========================= */
+
+async function saveProduct(){
+
+    clearError();
+
+
+    const name =
+        document.getElementById(
+            "productName"
+        ).value.trim();
+
+
+    const category =
+        document.getElementById(
+            "productCategory"
+        ).value;
+
+
+    const price =
+        Number(
+            document.getElementById(
+                "productPrice"
+            ).value
+        );
+
+
+    if(!name){
+
+        alert(
+            "Enter product name."
+        );
+
+        return;
+
+    }
+
+
+    if(price <= 0){
+
+        alert(
+            "Enter a valid price."
+        );
+
+        return;
+
+    }
+
+
+    let result;
+
+
+    if(editingProductId){
+
+        result =
+            await supabaseClient
+                .from("chaat_products")
+                .update({
+
+                    name:name,
+
+                    category:category,
+
+                    price:price
+
+                })
+                .eq(
+                    "id",
+                    editingProductId
+                );
+
+    }
+
+    else{
+
+        result =
+            await supabaseClient
+                .from("chaat_products")
+                .insert([{
+
+                    name:name,
+
+                    category:category,
+
+                    price:price,
+
+                    available:true
+
+                }]);
+
+    }
+
+
+    if(result.error){
+
+        console.error(
+            result.error
+        );
+
+        showError(
+            result.error.message
+        );
+
+        return;
+
+    }
+
+
+    cancelEdit();
+
+    await loadProducts();
+
+}
+
+
+/* =========================
+   EDIT PRODUCT
+========================= */
+
+function editProduct(product){
+
+    editingProductId =
+        product.id;
+
 
     document.getElementById(
-        "errorBox"
-    ).style.display="none";
+        "productName"
+    ).value =
+        product.name || "";
 
 
     document.getElementById(
-        "todayDate"
-    ).textContent=formatDate();
+        "productCategory"
+    ).value =
+        product.category || "Chaat";
 
 
-    const start =
-        getTodayStart();
+    document.getElementById(
+        "productPrice"
+    ).value =
+        product.price || "";
 
+
+    document.getElementById(
+        "saveProductButton"
+    ).textContent =
+        "UPDATE PRODUCT";
+
+
+    document.getElementById(
+        "cancelButton"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "productStatus"
+    ).textContent =
+        "Editing: " +
+        product.name;
+
+}
+        
+/* =========================
+   CANCEL EDIT
+========================= */
+
+function cancelEdit(){
+
+    editingProductId = null;
+
+
+    document.getElementById(
+        "productName"
+    ).value = "";
+
+
+    document.getElementById(
+        "productPrice"
+    ).value = "";
+
+
+    document.getElementById(
+        "productCategory"
+    ).value = "Chaat";
+
+
+    document.getElementById(
+        "saveProductButton"
+    ).textContent =
+        "ADD PRODUCT";
+
+
+    document.getElementById(
+        "cancelButton"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "productStatus"
+    ).textContent = "";
+
+}
+
+
+/* =========================
+   TOGGLE PRODUCT
+========================= */
+
+async function toggleProduct(
+    id,
+    currentStatus
+){
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("chaat_products")
+        .update({
+
+            available:
+                !currentStatus
+
+        })
+        .eq(
+            "id",
+            id
+        );
+
+
+    if(error){
+
+        showError(
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadProducts();
+
+}
+
+
+/* =========================
+   DELETE PRODUCT
+========================= */
+
+async function deleteProduct(id){
+
+    if(!confirm(
+        "Delete this product?"
+    )){
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("chaat_products")
+        .delete()
+        .eq(
+            "id",
+            id
+        );
+
+
+    if(error){
+
+        showError(
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadProducts();
+
+}
+
+
+/* =========================
+   LOAD ORDERS
+========================= */
+
+async function loadOrders(){
 
     const {
         data,
@@ -428,7 +1238,11 @@ async function loadDashboard(){
         .select("*")
         .gte(
             "created_at",
-            start
+            todayStart()
+        )
+        .lt(
+            "created_at",
+            tomorrowStart()
         )
         .order(
             "created_at",
@@ -440,9 +1254,8 @@ async function loadDashboard(){
 
     if(error){
 
-        console.error(error);
-
         showError(
+            "Orders: " +
             error.message
         );
 
@@ -451,53 +1264,27 @@ async function loadDashboard(){
     }
 
 
-    calculateStats(data || []);
+    let sales = 0;
 
-    displayOrders(data || []);
-
-}
+    let items = 0;
 
 
-function calculateStats(orders){
+    (data || []).forEach(order => {
 
-    let sales=0;
-
-    let cash=0;
-
-    let upi=0;
-
-    let card=0;
-
-    let items=0;
-
-
-    orders.forEach(order=>{
-
-        const total =
-            Number(order.total || 0);
-
-        sales += total;
-
-
-        if(order.payment_method==="Cash"){
-            cash += total;
-        }
-
-        if(order.payment_method==="UPI"){
-            upi += total;
-        }
-
-        if(order.payment_method==="Card"){
-            card += total;
-        }
+        sales +=
+            Number(
+                order.total || 0
+            );
 
 
         if(Array.isArray(order.items)){
 
-            order.items.forEach(item=>{
+            order.items.forEach(item => {
 
                 items +=
-                    Number(item.qty || 0);
+                    Number(
+                        item.qty || 0
+                    );
 
             });
 
@@ -509,31 +1296,13 @@ function calculateStats(orders){
     document.getElementById(
         "todaySales"
     ).textContent =
-        "₹"+sales;
+        "₹" + money(sales);
 
 
     document.getElementById(
         "todayOrders"
     ).textContent =
-        orders.length;
-
-
-    document.getElementById(
-        "cashSales"
-    ).textContent =
-        "₹"+cash;
-
-
-    document.getElementById(
-        "upiSales"
-    ).textContent =
-        "₹"+upi;
-
-
-    document.getElementById(
-        "cardSales"
-    ).textContent =
-        "₹"+card;
+        data.length;
 
 
     document.getElementById(
@@ -541,8 +1310,17 @@ function calculateStats(orders){
     ).textContent =
         items;
 
+
+    displayOrders(
+        data || []
+    );
+
 }
 
+
+/* =========================
+   DISPLAY ORDERS
+========================= */
 
 function displayOrders(orders){
 
@@ -552,14 +1330,14 @@ function displayOrders(orders){
         );
 
 
-    if(orders.length===0){
+    if(!orders.length){
 
-        tbody.innerHTML=`
+        tbody.innerHTML = `
 
             <tr>
 
                 <td
-                colspan="8"
+                colspan="7"
                 class="empty">
 
                     No orders today
@@ -576,36 +1354,25 @@ function displayOrders(orders){
 
 
     tbody.innerHTML =
-        orders.map(order=>{
-
-            let itemText="";
-
-            if(Array.isArray(order.items)){
-
-                itemText =
-                    order.items
-                    .map(item =>
-                        `${escapeHtml(item.name)}
-                        ×${item.qty}`
-                    )
-                    .join("<br>");
-
-            }
-
+        orders.map(order => {
 
             return `
 
                 <tr>
 
                     <td>
-                        <strong>
-                            #${order.order_number}
-                        </strong>
+                        #${order.order_number}
                     </td>
 
                     <td>
-                        ${formatTime(
+                        ${new Date(
                             order.created_at
+                        ).toLocaleTimeString(
+                            "en-IN",
+                            {
+                                hour:"2-digit",
+                                minute:"2-digit"
+                            }
                         )}
                     </td>
 
@@ -618,12 +1385,9 @@ function displayOrders(orders){
 
                     <td>
                         ${escapeHtml(
-                            order.table_number || "-"
+                            order.table_number ||
+                            "-"
                         )}
-                    </td>
-
-                    <td>
-                        ${itemText}
                     </td>
 
                     <td>
@@ -634,20 +1398,16 @@ function displayOrders(orders){
                     </td>
 
                     <td>
-                        <strong>
-                            ₹${Number(
-                                order.total || 0
-                            )}
-                        </strong>
+                        ₹${money(
+                            order.total
+                        )}
                     </td>
 
                     <td>
-                        <span class="status">
-                            ${escapeHtml(
-                                order.status ||
-                                "Pending"
-                            )}
-                        </span>
+                        ${escapeHtml(
+                            order.status ||
+                            "Pending"
+                        )}
                     </td>
 
                 </tr>
@@ -659,34 +1419,338 @@ function displayOrders(orders){
 }
 
 
-function showError(message){
+/* =========================
+   LOAD EXPENSES
+========================= */
 
-    const box =
-        document.getElementById(
-            "errorBox"
+async function loadExpenses(){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("chaat_expenses")
+        .select("*")
+        .gte(
+            "created_at",
+            todayStart()
+        )
+        .lt(
+            "created_at",
+            tomorrowStart()
+        )
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
         );
 
-    box.textContent =
-        "Error: "+message;
 
-    box.style.display="block";
+    if(error){
+
+        showError(
+            "Expenses: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    let total = 0;
+
+
+    (data || []).forEach(expense => {
+
+        total +=
+            Number(
+                expense.amount || 0
+            );
+
+    });
+
+
+    document.getElementById(
+        "todayExpenses"
+    ).textContent =
+        "₹" + money(total);
+
+
+    const salesText =
+        document.getElementById(
+            "todaySales"
+        ).textContent
+        .replace("₹","");
+
+
+    const sales =
+        Number(
+            salesText || 0
+        );
+
+
+    document.getElementById(
+        "netProfit"
+    ).textContent =
+        "₹" +
+        money(
+            sales - total
+        );
+
+
+    displayExpenses(
+        data || []
+    );
 
 }
 
 
-function escapeHtml(text){
+/* =========================
+   DISPLAY EXPENSES
+========================= */
 
-    return String(text)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+function displayExpenses(expenses){
+
+    const tbody =
+        document.getElementById(
+            "expenseTable"
+        );
+
+
+    if(!expenses.length){
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                colspan="5"
+                class="empty">
+
+                    No expenses today
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        expenses.map(expense => {
+
+            return `
+
+                <tr>
+
+                    <td>
+                        ${escapeHtml(
+                            expense.expense_name
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            expense.category
+                        )}
+                    </td>
+
+                    <td>
+                        ₹${money(
+                            expense.amount
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            expense.notes || "-"
+                        )}
+                    </td>
+
+                    <td>
+
+                        <button
+                        class="delete"
+                        onclick="deleteExpense(
+                            ${expense.id}
+                        )">
+
+                        DELETE
+
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
 
 }
 
 
-loadDashboard();
+/* =========================
+   ADD EXPENSE
+========================= */
+
+async function addExpense(){
+
+    clearError();
+
+
+    const name =
+        document.getElementById(
+            "expenseName"
+        ).value.trim();
+
+
+    const category =
+        document.getElementById(
+            "expenseCategory"
+        ).value;
+
+
+    const amount =
+        Number(
+            document.getElementById(
+                "expenseAmount"
+            ).value
+        );
+
+
+    const notes =
+        document.getElementById(
+            "expenseNotes"
+        ).value.trim();
+
+
+    if(!name){
+
+        alert(
+            "Enter expense name."
+        );
+
+        return;
+
+    }
+
+
+    if(amount <= 0){
+
+        alert(
+            "Enter a valid amount."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("chaat_expenses")
+        .insert([{
+
+            expense_name:name,
+
+            category:category,
+
+            amount:amount,
+
+            notes:notes
+
+        }]);
+
+
+    if(error){
+
+        showError(
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "expenseName"
+    ).value = "";
+
+
+    document.getElementById(
+        "expenseAmount"
+    ).value = "";
+
+
+    document.getElementById(
+        "expenseNotes"
+    ).value = "";
+
+
+    await loadExpenses();
+
+}
+
+
+/* =========================
+   DELETE EXPENSE
+========================= */
+
+async function deleteExpense(id){
+
+    if(!confirm(
+        "Delete this expense?"
+    )){
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("chaat_expenses")
+        .delete()
+        .eq(
+            "id",
+            id
+        );
+
+
+    if(error){
+
+        showError(
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadExpenses();
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadAll();
 
 </script>
 
