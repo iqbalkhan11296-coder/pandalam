@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Chaatarra Billing</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js?v=1"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #160005;
+            color: #fff;
+        }
+
+        header {
+            background: #4b001f;
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid #d6a84f;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #f5d27a;
+            font-family: Georgia, serif;
+            font-size: 28px;
+            letter-spacing: 3px;
+        }
+
+        header p {
+            margin: 4px 0 0;
+            color: #d9bd78;
+            font-size: 11px;
+            letter-spacing: 3px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            min-height: calc(100vh - 75px);
+        }
+
+        .menu-area {
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .category-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .category-btn {
+            border: 1px solid #c99b3b;
+            background: #29000e;
+            color: #f5d27a;
+            padding: 15px 5px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .category-btn.active {
+            background: #d0a43d;
+            color: #25000c;
+        }
+
+        .section-title {
+            color: #f5d27a;
+            font-family: Georgia, serif;
+            font-size: 23px;
+            text-align: center;
+            margin: 10px 0 15px;
+            letter-spacing: 2px;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+            gap: 10px;
+        }
+
+        .product {
+            min-height: 105px;
+            background: linear-gradient(145deg, #310011, #180006);
+            border: 1px solid #9d7629;
+            border-radius: 12px;
+            padding: 12px 8px;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: .15s;
+        }
+
+        .product:active {
+            transform: scale(.96);
+        }
+
+        .product-name {
+            font-size: 15px;
+            line-height: 1.3;
+            font-weight: bold;
+        }
+
+        .product-price {
+            color: #f5d27a;
+            font-size: 18px;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        /* BILL */
+
+        .bill-area {
+            background: #f8f4ea;
+            color: #222;
+            border-left: 1px solid #b68b36;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 75px);
+            position: sticky;
+            top: 75px;
+        }
+
+        .bill-header {
+            background: #4b001f;
+            color: #f5d27a;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .bill-header h2 {
+            margin: 0;
+            font-family: Georgia, serif;
+        }
+
+        .customer-section {
+            padding: 10px;
+            background: #eee8d8;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .customer-section input,
+        .customer-section select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #aaa;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .customer-section .full {
+            grid-column: 1 / -1;
+        }
+
+        .cart {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #888;
+            padding: 50px 10px;
+        }
+
+        .cart-item {
+            border-bottom: 1px solid #ddd;
+            padding: 9px 0;
+        }
+
+        .cart-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 5px;
+        }
+
+        .cart-name {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .cart-price {
+            font-weight: bold;
+        }
+
+        .cart-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 7px;
+        }
+
+        .qty {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty button {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 5px;
+            background: #4b001f;
+            color: white;
+            font-size: 18px;
+        }
+
+        .remove {
+            border: none;
+            background: none;
+            color: #a00000;
+            font-size: 12px;
+        }
+
+        .bill-bottom {
+            border-top: 2px solid #4b001f;
+            background: white;
+            padding: 12px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 22px;
+            font-weight: bold;
+            color: #4b001f;
+            margin-bottom: 10px;
+        }
+
+        .payment {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .payment button {
+            padding: 10px 4px;
+            border: 1px solid #aaa;
+            background: white;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .payment button.active {
+            background: #4b001f;
+            color: #f5d27a;
+            border-color: #4b001f;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .action-buttons button {
+            border: none;
+            padding: 14px 5px;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .clear-btn {
+            background: #ddd;
+            color: #333;
+        }
+
+        .bill-btn {
+            background: #4b001f;
+            color: #f5d27a;
+        }
+
+        button {
+            touch-action: manipulation;
+        }
+
+        /* PRINT */
+
+        #printArea {
+            display: none;
+        }
+
+        @media (max-width: 850px) {
+
+            .layout {
+                display: block;
+            }
+
+            .menu-area {
+                padding-bottom: 390px;
+            }
+
+            .bill-area {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: auto;
+                height: 370px;
+                z-index: 30;
+                border-top: 2px solid #b68b36;
+                border-left: none;
+            }
+
+            .bill-header {
+                padding: 7px;
+            }
+
+            .bill-header h2 {
+                font-size: 18px;
+            }
+
+            .customer-section {
+                padding: 6px;
+            }
+
+            .customer-section input {
+                padding: 8px;
+            }
+
+            .cart {
+                padding: 6px 10px;
+            }
+
+            .bill-bottom {
+                padding: 7px 10px;
+            }
+
+            .total-row {
+                font-size: 20px;
+                margin-bottom: 5px;
+            }
+
+            .products {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .product {
+                min-height: 90px;
+            }
+        }
+
+        @media print {
+
+            body * {
+                visibility: hidden !important;
+            }
+
+            #printArea,
+            #printArea * {
+                visibility: visible !important;
+            }
+
+            #printArea {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 58mm;
+                padding: 2mm;
+                background: white;
+                color: black;
+                font-family: monospace;
+                font-size: 11px;
+            }
+
+            @page {
+                size: 58mm auto;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>CHAATARRA</h1>
+        <p>THE HOUSE OF CHAATS</p>
+    </header>
+
+    <div class="layout">
+
+        <!-- MENU -->
+
+        <section class="menu-area">
+
+            <div class="category-buttons">
+
+                <button class="category-btn active"
+                    onclick="showCategory('chaat', this)">
+                    CHAAT
+                </button>
+
+                <button class="category-btn"
+                    onclick="showCategory('drinks', this)">
+                    DRINKS
+                </button>
+
+                <button class="category-btn"
+                    onclick="showCategory('combos', this)">
+                    COMBOS
+                </button>
+
+            </div>
+
+            <div id="menuContainer"></div>
+
+        </section>
+
+
+        <!-- BILL -->
+
+        <aside class="bill-area">
+
+            <div class="bill-header">
+                <h2>CURRENT BILL</h2>
+            </div>
+
+            <div class="customer-section">
+
+                <input
+                    id="customerName"
+                    class="full"
+                    type="text"
+                    placeholder="Customer Name">
+
+                <input
+                    id="tableNumber"
+                    type="text"
+                    placeholder="Table / Token No.">
+
+                <input
+                    id="phone"
+                    type="tel"
+                    placeholder="Phone (optional)">
+
+            </div>
+
+            <div id="cart" class="cart">
+
+                <div class="empty">
+                    No items added
+                </div>
+
+            </div>
+
+            <div class="bill-bottom">
+
+                <div class="total-row">
+                    <span>TOTAL</span>
+                    <span id="total">₹0</span>
+                </div>
+
+                <div class="payment">
+
+                    <button
+                        class="payment-btn active"
+                        onclick="selectPayment('Cash', this)">
+                        CASH
+                    </button>
+
+                    <button
+                        class="payment-btn"
+                        onclick="selectPayment('UPI', this)">
+                        UPI
+                    </button>
+
+                    <button
+                        class="payment-btn"
+                        onclick="selectPayment('Card', this)">
+                        CARD
+                    </button>
+
+                </div>
+
+                <div class="action-buttons">
+
+                    <button
+                        class="clear-btn"
+                        onclick="clearCart()">
+                        CLEAR
+                    </button>
+
+                    <button
+                        class="bill-btn"
+                        onclick="placeOrder()">
+                        BILL & PRINT
+                    </button>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+    <!-- PRINT RECEIPT -->
+
+    <div id="printArea"></div>
+
+
+    <script>
+
+        /* =========================
+           MENU
+        ========================= */
+
+        const menu = {
+
+            chaat: [
+
+                {
+                    name: "Pani Puri",
+                    price: 50
+                },
+
+                {
+                    name: "Masala Puri",
+                    price: 60
+                },
+
+                {
+                    name: "Samoosa Chaat",
+                    price: 70
+                },
+
+                {
+                    name: "Dahi Puri",
+                    price: 80
+                },
+
+                {
+                    name: "Chicken Momos",
+                    price: 100
+                },
+
+                {
+                    name: "Paneer Momos",
+                    price: 100
+                }
+
+            ],
+
+            drinks: [
+
+                {
+                    name: "Oreo Shake",
+                    price: 80
+                },
+
+                {
+                    name: "Lotus Biscoff Shake",
+                    price: 90
+                },
+
+                {
+                    name: "Mango Shake",
+                    price: 90
+                },
+
+                {
+                    name: "Blueberry Shake",
+                    price: 130
+                },
+
+                {
+                    name: "Watermelon Shake",
+                    price: 80
+                },
+
+                {
+                    name: "Strawberry Shake",
+                    price: 90
+                },
+
+                {
+                    name: "Snickers Shake",
+                    price: 80
+                },
+
+                {
+                    name: "Watermelon Lime",
+                    price: 50
+                },
+
+                {
+                    name: "Mint Lime",
+                    price: 35
+                },
+
+                {
+                    name: "Tender Coconut Shake",
+                    price: 90
+                },
+
+                {
+                    name: "KitKat Shake",
+                    price: 80
+                },
+
+                {
+                    name: "Classic Coffee",
+                    price: 80
+                },
+
+                {
+                    name: "Butterscotch Coffee",
+                    price: 90
+                },
+
+                {
+                    name: "Vanilla Coffee",
+                    price: 90
+                },
+
+                {
+                    name: "Hazelnut Coffee",
+                    price: 90
+                },
+
+                {
+                    name: "Coconut Coffee",
+                    price: 90
+                },
+
+                {
+                    name: "Chocolate Coffee",
+                    price: 90
+                }
+
+            ],
+
+            combos: [
+
+                {
+                    name: "Pani Puri + Watermelon Lime",
+                    price: 80
+                },
+
+                {
+                    name: "Masala Puri + Watermelon Lime",
+                    price: 90
+                },
+
+                {
+                    name: "Samoosa Chaat + Biscoff Shake",
+                    price: 130
+                },
+
+                {
+                    name: "Masala Puri + Watermelon Shake",
+                    price: 125
+                },
+
+                {
+                    name: "Samoosa Chaat + Watermelon Shake",
+                    price: 130
+                },
+
+                {
+                    name: "Masala Puri + Biscoff Shake",
+                    price: 125
+                },
+
+                {
+                    name: "Momos + Watermelon Shake",
+                    price: 170
+                }
+
+            ]
+
+        };
+
+
+        /* =========================
+           CART
+        ========================= */
+
+        let cart = [];
+
+        let selectedPayment = "Cash";
+
+        let currentCategory = "chaat";
+
+
+        /* =========================
+           SHOW CATEGORY
+        ========================= */
+
+        function showCategory(category, button) {
+
+            currentCategory = category;
+
+            document
+                .querySelectorAll(".category-btn")
+                .forEach(btn => btn.classList.remove("active"));
+
+            button.classList.add("active");
+
+            renderMenu(category);
+
+        }
+
+
+        /* =========================
+           RENDER MENU
+        ========================= */
+
+        function renderMenu(category) {
+
+            const container =
+                document.getElementById("menuContainer");
+
+            const title =
+                category === "chaat"
+                    ? "CHAAT"
+                    : category === "drinks"
+                        ? "DRINKS"
+                        : "COMBOS";
+
+            container.innerHTML = `
+                <div class="section-title">
+                    ${title}
+                </div>
+
+                <div class="products">
+
+                    ${menu[category].map((item, index) => `
+
+                        <button
+                            class="product"
+                            onclick="addToCart('${category}', ${index})">
+
+                            <div class="product-name">
+                                ${item.name}
+                            </div>
+
+                            <div class="product-price">
+                                ₹${item.price}
+                            </div>
+
+                        </button>
+
+                    `).join("")}
+
+                </div>
+            `;
+
+        }
+
+
+        /* =========================
+           ADD TO CART
+        ========================= */
+
+        function addToCart(category, index) {
+
+            const item = menu[category][index];
+
+            const existing =
+                cart.find(
+                    x => x.name === item.name
+                );
+
+            if (existing) {
+
+                existing.qty++;
+
+            } else {
+
+                cart.push({
+                    name: item.name,
+                    price: item.price,
+                    qty: 1
+                });
+
+            }
+
+            renderCart();
+
+        }
+
+
+        /* =========================
+           CHANGE QUANTITY
+        ========================= */
+
+        function changeQty(index, amount) {
+
+            cart[index].qty += amount;
+
+            if (cart[index].qty <= 0) {
+
+                cart.splice(index, 1);
+
+            }
+
+            renderCart();
+
+        }
+
+
+        /* =========================
+           REMOVE ITEM
+        ========================= */
+
+        function removeItem(index) {
+
+            cart.splice(index, 1);
+
+            renderCart();
+
+        }
+
+
+        /*
+
+RENDER CART
+
+*/
+
+function renderCart() {
+
+const cart Div =
+
+document.getElementById("cart");
+
+if (cart.length === 0) {
+
+cartDiv.innerHTML =
+
+;
+
+<div class="empty">
+
+No items added
+
+</div>
+
+}
+
+document.getElementById("total")
+
+.textContent = "0";
+
+return;
+
+let total = 0;
+
+cartDiv.innerHTML =
+
+cart.map((item, index) => {
+
+const itemTotal = item.price * item.qty;
+
+total += item Total;
+
+return`
+
+<div class="cart-item">
+
+<div class="cart-top">
+
+<span class="cart-name">
+
+${item.name}
+
+</span>
+
+<span class="cart-price">
+
+${item Total}
+
+</span>
+
+</div>
+
+<div class="cart-bottom">
+
+<div class="qty">
+  <div class="cart-bottom">
+
+<div class="qty">
+
+<button
+
+onclick="changeQty(${index}, -1)">
+
+</button>
+
+<strong>
+
+${item.qty}
+
+</strong>
+
+<button
+
+onclick="changeQty(${index], 1)">
+
++
+
+</button>
+
+</div>
+
+<button
+
+class="remove"
+
+onclick="removeltem(${index})">
+
+REMOVE
+
+</button>
+
+</div>
+
+</div>
+
+}).join("");
+
+document.getElementById("total")
+
+.textContent = "" + total;
+
+/*
+
+PAYMENT
+
+*/
+
+function selectPayment (method, button) {
+
+selected Payment method;
+
+document
+
+.querySelectorAll(".payment-btn")
+
+.forEach(btn =>
+
+btn.classList.remove("active")
+
+);
+btn.classList.remove("active")
+
+button.classList.add("active");
+
+/*
+
+TOTAL
+
+function getTotal() {
+
+return cart.reduce(
+
+(sum, item) => ); sum + (item.price * item.qty), 0
+
+}
+
+/*
+
+CLEAR
+
+*/
+
+function clearCart() {
+
+if (cart.length === 0) return;
+
+if (!confirm("Clear current bill?")) { } return;
+
+cart = [];
+
+}
+
+B/s
+
+document.getElementById("customerName")
+
+.value = "";
+
+document.getElementByld("table Number") .value = "";
+
+document.getElementById("phone") .value = "";
+
+renderCart();
+
+/*
+
+NEXT ORDER NUMBER
+
+*/
+async function getNextOrderNumber() {
+
+}
+
+const { data, error } =
+
+await supabaseClient
+
+.from("chaat_orders")
+
+.select("order_number")
+
+.order("order_number", {
+
+ascending: false
+
+})
+
+.limit(1);
+
+if (error) {
+
+}
+
+console.error(error);
+
+return 1;
+
+if (!data || data.length === 0) {
+
+return 1;
+
+}
+
+return Number(data[0].order_number) + 1;
+
+/*
+
+PLACE ORDER
+
+===== */
+
+async function placeOrder() {
+
+if (cart.length 0) {
+
+}
+
+alert("Please add items first.");
+
+return;
+
+const customerName =
+
+document
+
+.getElementById("customerName")
+
+.value
+
+.trim();
+
+const table Number =
+
+document
+
+.getElementById("tableNumber")
+
+.value
+
+.trim();
+const phone
+
+document
+
+.getElementById("phone")
+
+.value
+
+.trim();
+
+const total = getTotal();
+
+const orderNumber =
+
+await getNextOrderNumber();
+
+const orderData = {
+
+};
+
+order_number: orderNumber,
+
+customer_name:
+
+customerName || "Walk-in Customer",
+
+table_number:
+
+table Number || "",
+
+items: cart,
+
+total: total,
+
+payment_method:
+
+selected Payment,
+
+status: "Pending"
+
+const { data, error } =
+
+await supabaseClient
+
+.from("chaat_orders")
+
+.insert([orderData])
+
+.select();
+
+if (error) {
+
+console.error(error);
+
+alert(
+
+"Order could not be saved.\n\n" + error.message );
+
+}
+
+return;
+}
+
+*/
+
+function createReceipt( orderNumber, customerName, table Number, phone, total
+
+) {
+
+const now = new Date();
+
+const date
+
+now.toLocaleDateString("en-IN");
+const time =
+
+now.toLocale TimeString(
+
+"en-IN",
+
+hour: "2-digit",
+
+{ } );
+
+minute: "2-digit"
+
+let html =
+
+<div style="text-align:center">
+
+<strong style="font-size:16px">
+
+CHAATARRA
+
+</strong><br>
+
+THE HOUSE OF CHAATS<br>
+
+</div>
+
+ORDER: #${orderNumber}<br>
+
+DATE: ${date}<br>
+
+TIME: ${time}<br>
+
+CUSTOMER: ${escapeHtml (customerName)}<br>
+
+${tableNumber
+
+? "TABLE/TOKEN: " + escapeHtml(tableNumber) + "<br>"
+
+: ""}
+
+${phone
+
+? "PHONE: " +
+
+escapeHtml(phone) + "<br>" : ""}
+
+cart.forEach(item => {
+
+const itemTotal =
+
+item.price* item.qty;
+html +=
+
+<div style="
+
+display: flex;
+
+justify-content:space-between;
+
+margin:3px 0;
+
+<span>
+
+${escapeHtml(item.name)}
+
+x${item.qty}
+
+</span>
+
+<span>
+
+${itemTotal]
+
+</span>
+
+</div>
+
+});
+
+html +=
+
+<div style="
+
+>
+
+display: flex;
+
+justify-content:space-between;
+
+font-weight:bold;
+
+font-size:14px;
+
+<span>TOTAL</span>
+
+<span>${total}</span>
+
+</div>
+
+PAYMENT: ${selected Payment}
+
+<br><br>
+
+<div style="text-align:center">
+
+Thank you!<br>
+
+Good Food Better Mood
+
+</div>
+           </div>
+
+PAYMENT: ${selected Payment}
+
+<br><br>
+
+<div style="text-align:center">
+
+Thank you!<br>
+
+Good Food Better Mood
+
+</div>
+
+}
+
+document.getElementById("printArea")
+
+.innerHTML = html;
+
+/*
+
+HTML SAFETY
+
+function escapeHtml (text) {
+
+}
+
+return String(text)
+
+.replace(/8/g, "&amp;")
+
+.replace(/</g, "&lt;")
+
+.replace(/>/g, "&gt;")
+
+.replace(/"/g, "&quot;")
+
+.replace(/'/g, "&#039;");
+
+/*
+
+START
+
+renderMenu("chaat");
+
+renderCart();
+
+</script>
+
+</body>
+
+</html>
