@@ -1236,29 +1236,52 @@ function prepareReceipt(order){
 
 
     receiptItems.innerHTML =
-        order.items.map(item => {
+    order.items.map(item => {
 
-            return `
+        const price =
+            Number(item.price || 0);
 
-                <div class="receipt-item">
+        const qty =
+            Number(item.qty || 0);
+
+        const subtotal =
+            price * qty;
+
+        return `
+
+            <div
+                style="
+                    display:block;
+                    margin:5px 0;
+                    line-height:1.4;
+                "
+            >
+
+                <div style="font-weight:bold;">
+                    ${escapeHtml(item.name)}
+                </div>
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                ">
 
                     <span>
-                        ${escapeHtml(item.name)}
-                        ×${item.qty}
+                        ₹${price.toFixed(0)}
+                        × ${qty}
                     </span>
 
                     <span>
-                        ₹${Number(
-                            item.subtotal
-                        ).toFixed(0)}
+                        = ₹${subtotal.toFixed(0)}
                     </span>
 
                 </div>
 
-            `;
+            </div>
 
-        }).join("");
+        `;
 
+    }).join("");
 
     document.getElementById(
         "receiptTotal"
