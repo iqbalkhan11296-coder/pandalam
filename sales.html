@@ -11,7 +11,8 @@ content="width=device-width, initial-scale=1.0">
 <title>Sales Tracking</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js?v=1"></script>
+
+<script src="supabase.js?v=99"></script>
 
 <style>
 
@@ -59,7 +60,7 @@ header p{
     border-radius:10px;
     padding:14px;
     display:grid;
-    grid-template-columns:1fr 1fr auto;
+    grid-template-columns:1fr 1fr 1fr auto;
     gap:10px;
     margin-bottom:18px;
 }
@@ -71,11 +72,14 @@ header p{
     margin-bottom:5px;
 }
 
-.filters input{
+.filters input,
+.filters select{
     width:100%;
     padding:10px;
     border-radius:6px;
     border:1px solid #8c6a2d;
+    background:white;
+    color:#222;
 }
 
 .load-btn{
@@ -97,7 +101,12 @@ header p{
 }
 
 .card{
-    background:linear-gradient(145deg,#310011,#180006);
+    background:linear-gradient(
+        145deg,
+        #310011,
+        #180006
+    );
+
     border:1px solid #9d7629;
     border-radius:12px;
     padding:18px;
@@ -161,7 +170,65 @@ td{
     color:#777;
 }
 
-@media(max-width:650px){
+.delete-btn{
+    background:#8b0000;
+    color:white;
+    border:none;
+    border-radius:5px;
+    padding:7px 10px;
+    font-size:12px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.delete-btn:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+}
+
+.category-filter{
+    background:#29000e;
+    border:1px solid #9d7629;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:18px;
+}
+
+.category-filter-title{
+    color:#d9bd78;
+    font-size:12px;
+    margin-bottom:8px;
+}
+
+.category-buttons{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.category-btn{
+    flex:1;
+    min-width:90px;
+    padding:10px 14px;
+    border:1px solid #9d7629;
+    border-radius:6px;
+    background:#180006;
+    color:#f5d27a;
+    font-weight:bold;
+}
+
+.category-btn.active{
+    background:#d0a43d;
+    color:#25000c;
+}
+
+.filter-info{
+    color:#c9ad70;
+    font-size:12px;
+    margin-top:9px;
+}
+
+@media(max-width:750px){
 
     .filters{
         grid-template-columns:1fr;
@@ -171,12 +238,16 @@ td{
         width:100%;
     }
 
+    .category-btn{
+        min-width:70px;
+    }
+
     .panel{
         overflow-x:auto;
     }
 
     table{
-        min-width:650px;
+        min-width:760px;
     }
 
 }
@@ -227,6 +298,34 @@ id="toDate">
 </div>
 
 
+<div>
+
+<label>CATEGORY</label>
+
+<select id="categoryFilter"
+onchange="applyCategoryFilter()">
+
+<option value="All">
+All Categories
+</option>
+
+<option value="Chaat">
+Chaat
+</option>
+
+<option value="Drinks">
+Drinks
+</option>
+
+<option value="Combos">
+Combos
+</option>
+
+</select>
+
+</div>
+
+
 <button
 class="load-btn"
 onclick="loadSales()">
@@ -234,6 +333,63 @@ onclick="loadSales()">
 VIEW SALES
 
 </button>
+
+</div>
+
+
+<div class="category-filter">
+
+<div class="category-filter-title">
+FILTER SALES BY CATEGORY
+</div>
+
+<div class="category-buttons">
+
+<button
+class="category-btn active"
+data-category="All"
+onclick="selectCategory('All',this)">
+
+ALL
+
+</button>
+
+<button
+class="category-btn"
+data-category="Chaat"
+onclick="selectCategory('Chaat',this)">
+
+CHAAT
+
+</button>
+
+<button
+class="category-btn"
+data-category="Drinks"
+onclick="selectCategory('Drinks',this)">
+
+DRINKS
+
+</button>
+
+<button
+class="category-btn"
+data-category="Combos"
+onclick="selectCategory('Combos',this)">
+
+COMBOS
+
+</button>
+
+</div>
+
+<div
+id="filterInfo"
+class="filter-info">
+
+Showing all categories
+
+</div>
 
 </div>
 
@@ -246,9 +402,12 @@ VIEW SALES
 TOTAL SALES
 </div>
 
-<div class="card-value"
+<div
+class="card-value"
 id="totalSales">
+
 ₹0
+
 </div>
 
 </div>
@@ -260,9 +419,12 @@ id="totalSales">
 TOTAL ORDERS
 </div>
 
-<div class="card-value"
+<div
+class="card-value"
 id="totalOrders">
+
 0
+
 </div>
 
 </div>
@@ -274,9 +436,12 @@ id="totalOrders">
 TOTAL ITEMS SOLD
 </div>
 
-<div class="card-value"
+<div
+class="card-value"
 id="totalItems">
+
 0
+
 </div>
 
 </div>
@@ -288,9 +453,12 @@ id="totalItems">
 AVERAGE BILL
 </div>
 
-<div class="card-value"
+<div
+class="card-value"
 id="averageBill">
+
 ₹0
+
 </div>
 
 </div>
@@ -312,7 +480,9 @@ CASH
 
 <div class="card-value"
 id="cashSales">
+
 ₹0
+
 </div>
 
 </div>
@@ -326,7 +496,9 @@ UPI
 
 <div class="card-value"
 id="upiSales">
+
 ₹0
+
 </div>
 
 </div>
@@ -340,7 +512,9 @@ CARD
 
 <div class="card-value"
 id="cardSales">
+
 ₹0
+
 </div>
 
 </div>
@@ -412,6 +586,8 @@ ORDERS
 
 <th>Total</th>
 
+<th>Action</th>
+
 </tr>
 
 </thead>
@@ -420,7 +596,7 @@ ORDERS
 
 <tr>
 
-<td colspan="5"
+<td colspan="6"
 class="empty">
 
 Loading...
@@ -436,9 +612,11 @@ Loading...
 </div>
 
 </div>
-
-
 <script>
+
+let allOrders = [];
+
+let currentCategory = "All";
 
 
 function localDateString(date){
@@ -475,6 +653,178 @@ function setDefaultDates(){
         "toDate"
     ).value =
         localDateString(today);
+
+}
+
+
+function selectCategory(category, button){
+
+    currentCategory = category;
+
+    document.querySelectorAll(
+        ".category-btn"
+    ).forEach(btn=>{
+
+        btn.classList.remove(
+            "active"
+        );
+
+    });
+
+
+    button.classList.add(
+        "active"
+    );
+
+
+    document.getElementById(
+        "categoryFilter"
+    ).value = category;
+
+
+    updateFilterInfo();
+
+
+    if(allOrders.length){
+
+        calculateSales(
+            getFilteredOrders()
+        );
+
+    }
+
+}
+
+
+function applyCategoryFilter(){
+
+    const select =
+        document.getElementById(
+            "categoryFilter"
+        );
+
+    currentCategory =
+        select.value;
+
+
+    document.querySelectorAll(
+        ".category-btn"
+    ).forEach(btn=>{
+
+        btn.classList.toggle(
+            "active",
+            btn.dataset.category ===
+            currentCategory
+        );
+
+    });
+
+
+    updateFilterInfo();
+
+
+    if(allOrders.length){
+
+        calculateSales(
+            getFilteredOrders()
+        );
+
+    }
+
+}
+
+
+function updateFilterInfo(){
+
+    const info =
+        document.getElementById(
+            "filterInfo"
+        );
+
+
+    if(currentCategory === "All"){
+
+        info.textContent =
+            "Showing all categories";
+
+    }else{
+
+        info.textContent =
+            "Showing only " +
+            currentCategory +
+            " sales";
+
+    }
+
+}
+
+
+function orderHasCategory(order, category){
+
+    if(category === "All"){
+        return true;
+    }
+
+
+    if(!Array.isArray(order.items)){
+        return false;
+    }
+
+
+    return order.items.some(item=>{
+
+        return normalizeCategory(
+            item.category
+        ) === category;
+
+    });
+
+}
+
+
+function normalizeCategory(category){
+
+    const value =
+        String(
+            category || ""
+        ).trim().toLowerCase();
+
+
+    if(value === "chaat"){
+        return "Chaat";
+    }
+
+    if(value === "drinks"){
+        return "Drinks";
+    }
+
+    if(value === "combos"){
+        return "Combos";
+    }
+
+
+    return String(category || "").trim();
+
+}
+
+
+function getFilteredOrders(){
+
+    if(currentCategory === "All"){
+
+        return allOrders;
+
+    }
+
+
+    return allOrders.filter(order=>{
+
+        return orderHasCategory(
+            order,
+            currentCategory
+        );
+
+    });
 
 }
 
@@ -531,6 +881,7 @@ async function loadSales(){
             to+"T00:00:00"
         );
 
+
     endDate.setDate(
         endDate.getDate()+1
     );
@@ -576,8 +927,12 @@ async function loadSales(){
     }
 
 
+    allOrders =
+        data || [];
+
+
     calculateSales(
-        data || []
+        getFilteredOrders()
     );
 
 }
@@ -585,59 +940,113 @@ async function loadSales(){
 
 function calculateSales(orders){
 
-    let totalSales=0;
+    let totalSales = 0;
 
-    let totalItems=0;
+    let totalItems = 0;
 
-    let cash=0;
+    let cash = 0;
 
-    let upi=0;
+    let upi = 0;
 
-    let card=0;
+    let card = 0;
 
 
-    const itemSales={};
+    const itemSales = {};
 
 
     orders.forEach(order=>{
 
         const total =
-            Number(order.total || 0);
+            Number(
+                order.total || 0
+            );
 
-        totalSales += total;
+
+        /*
+         * For ALL category:
+         * use the complete order total.
+         */
+
+        if(currentCategory === "All"){
+
+            totalSales += total;
 
 
-        if(order.payment_method==="Cash"){
-            cash += total;
+            if(order.payment_method === "Cash"){
+                cash += total;
+            }
+
+            if(order.payment_method === "UPI"){
+                upi += total;
+            }
+
+            if(order.payment_method === "Card"){
+                card += total;
+            }
+
         }
 
-        if(order.payment_method==="UPI"){
-            upi += total;
-        }
 
-        if(order.payment_method==="Card"){
-            card += total;
-        }
-
+        /*
+         * For a specific category:
+         * calculate only the items belonging
+         * to that category.
+         */
 
         if(Array.isArray(order.items)){
 
             order.items.forEach(item=>{
 
+                const itemCategory =
+                    normalizeCategory(
+                        item.category
+                    );
+
+
+                if(
+                    currentCategory !== "All" &&
+                    itemCategory !== currentCategory
+                ){
+
+                    return;
+
+                }
+
+
                 const qty =
-                    Number(item.qty || 0);
+                    Number(
+                        item.qty || 0
+                    );
+
 
                 const price =
-                    Number(item.price || 0);
+                    Number(
+                        item.price || 0
+                    );
+
+
+                const revenue =
+                    qty * price;
+
 
                 totalItems += qty;
 
 
+                if(currentCategory !== "All"){
+
+                    totalSales += revenue;
+
+                }
+
+
                 if(!itemSales[item.name]){
 
-                    itemSales[item.name]={
+                    itemSales[item.name] = {
+
                         qty:0,
+
                         revenue:0
+
                     };
 
                 }
@@ -646,10 +1055,58 @@ function calculateSales(orders){
                 itemSales[item.name].qty
                     += qty;
 
+
                 itemSales[item.name].revenue
-                    += qty * price;
+                    += revenue;
 
             });
+
+        }
+
+
+        /*
+         * When a category is selected,
+         * payment breakdown is based on
+         * the selected category revenue.
+         */
+
+        if(currentCategory !== "All"){
+
+            let categoryTotal = 0;
+
+
+            if(Array.isArray(order.items)){
+
+                order.items.forEach(item=>{
+
+                    if(
+                        normalizeCategory(
+                            item.category
+                        ) === currentCategory
+                    ){
+
+                        categoryTotal +=
+                            Number(item.qty || 0) *
+                            Number(item.price || 0);
+
+                    }
+
+                });
+
+            }
+
+
+            if(order.payment_method === "Cash"){
+                cash += categoryTotal;
+            }
+
+            if(order.payment_method === "UPI"){
+                upi += categoryTotal;
+            }
+
+            if(order.payment_method === "Card"){
+                card += categoryTotal;
+            }
 
         }
 
@@ -665,7 +1122,9 @@ function calculateSales(orders){
     document.getElementById(
         "totalSales"
     ).textContent =
-        "₹"+formatMoney(totalSales);
+        "₹"+formatMoney(
+            totalSales
+        );
 
 
     document.getElementById(
@@ -683,25 +1142,33 @@ function calculateSales(orders){
     document.getElementById(
         "averageBill"
     ).textContent =
-        "₹"+formatMoney(average);
+        "₹"+formatMoney(
+            average
+        );
 
 
     document.getElementById(
         "cashSales"
     ).textContent =
-        "₹"+formatMoney(cash);
+        "₹"+formatMoney(
+            cash
+        );
 
 
     document.getElementById(
         "upiSales"
     ).textContent =
-        "₹"+formatMoney(upi);
+        "₹"+formatMoney(
+            upi
+        );
 
 
     document.getElementById(
         "cardSales"
     ).textContent =
-        "₹"+formatMoney(card);
+        "₹"+formatMoney(
+            card
+        );
 
 
     displayItems(
@@ -734,9 +1201,9 @@ function displayItems(itemSales){
         );
 
 
-    if(names.length===0){
+    if(names.length === 0){
 
-        tbody.innerHTML=`
+        tbody.innerHTML = `
 
             <tr>
 
@@ -762,6 +1229,7 @@ function displayItems(itemSales){
 
             const item =
                 itemSales[name];
+
 
             return `
 
@@ -798,14 +1266,14 @@ function displayOrders(orders){
         );
 
 
-    if(orders.length===0){
+    if(orders.length === 0){
 
-        tbody.innerHTML=`
+        tbody.innerHTML = `
 
             <tr>
 
                 <td
-                colspan="5"
+                colspan="6"
                 class="empty">
 
                     No orders found
@@ -867,6 +1335,18 @@ function displayOrders(orders){
                         )}
                     </td>
 
+                    <td>
+
+                        <button
+                        class="delete-btn"
+                        onclick="deleteOrder(${order.id})">
+
+                            DELETE
+
+                        </button>
+
+                    </td>
+
                 </tr>
 
             `;
@@ -874,9 +1354,7 @@ function displayOrders(orders){
         }).join("");
 
 }
-
-
-function formatMoney(number){
+    function formatMoney(number){
 
     return Number(number)
         .toFixed(2)
@@ -896,9 +1374,10 @@ function showError(message){
         );
 
     box.textContent =
-        "Error: "+message;
+        "Error: " + message;
 
-    box.style.display="block";
+    box.style.display =
+        "block";
 
 }
 
@@ -906,16 +1385,172 @@ function showError(message){
 function escapeHtml(text){
 
     return String(text)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
 
+/* ================================
+   DELETE ORDER
+================================ */
+
+async function deleteOrder(orderId){
+
+    const order =
+        allOrders.find(
+            item =>
+                Number(item.id) ===
+                Number(orderId)
+        );
+
+
+    if(!order){
+
+        showError(
+            "Order not found."
+        );
+
+        return;
+
+    }
+
+
+    const orderNumber =
+        order.order_number;
+
+
+    const customer =
+        order.customer_name ||
+        "Walk-in Customer";
+
+
+    const confirmed =
+        confirm(
+            "Delete Order #" +
+            orderNumber +
+            "?\n\n" +
+            "Customer: " +
+            customer +
+            "\n" +
+            "Amount: ₹" +
+            formatMoney(
+                Number(
+                    order.total || 0
+                )
+            ) +
+            "\n\n" +
+            "This cannot be undone."
+        );
+
+
+    if(!confirmed){
+        return;
+    }
+
+
+    document.getElementById(
+        "errorBox"
+    ).style.display =
+        "none";
+
+
+    /*
+     * Disable the clicked delete button
+     * while Supabase is processing.
+     */
+
+    const buttons =
+        document.querySelectorAll(
+            ".delete-btn"
+        );
+
+
+    buttons.forEach(button=>{
+
+        button.disabled = true;
+
+    });
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("chaat_orders")
+        .delete()
+        .eq(
+            "id",
+            orderId
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        buttons.forEach(button=>{
+
+            button.disabled = false;
+
+        });
+
+
+        showError(
+            "Could not delete order: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Remove the order locally first.
+     * Then recalculate everything immediately.
+     */
+
+    allOrders =
+        allOrders.filter(
+            item =>
+                Number(item.id) !==
+                Number(orderId)
+        );
+
+
+    calculateSales(
+        getFilteredOrders()
+    );
+
+}
+
+
+/* ================================
+   INITIAL LOAD
+================================ */
+
 setDefaultDates();
+
+updateFilterInfo();
 
 loadSales();
 
