@@ -10,6 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -23,17 +24,78 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 80px 20px 20px;
 }
+
+/* =========================
+   RETURN TO BILLING BUTTON
+========================= */
+
+.right {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 1000;
+
+    padding: 11px 18px;
+
+    border: 1px solid #d6a84f;
+    border-radius: 12px;
+
+    background: linear-gradient(
+        135deg,
+        #4b001f,
+        #72002e
+    );
+
+    color: #f5d27a;
+
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.18);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.right:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,0.25);
+}
+
+.right:active {
+    transform: scale(0.96);
+}
+
+/* =========================
+   MAIN APP
+========================= */
 
 .app {
     width: 100%;
     max-width: 420px;
+
     background: white;
+
     border-radius: 24px;
+
     padding: 25px;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,0.12);
 }
+
+/* =========================
+   HEADER
+========================= */
 
 .header {
     text-align: center;
@@ -51,84 +113,138 @@ body {
     font-size: 14px;
 }
 
+/* =========================
+   UPI ID
+========================= */
+
 .upi-id {
     background: #f5f5f5;
+
     padding: 10px;
+
     border-radius: 10px;
+
     text-align: center;
+
     margin-bottom: 20px;
+
     font-size: 14px;
+
     color: #555;
 }
 
+/* =========================
+   AMOUNT
+========================= */
+
 .amount-box {
     background: #111;
+
     color: white;
+
     border-radius: 18px;
+
     padding: 20px;
+
     text-align: center;
+
     margin-bottom: 18px;
 }
 
 .amount-label {
     font-size: 13px;
+
     color: #aaa;
+
     margin-bottom: 8px;
 }
 
 .amount {
     font-size: 42px;
+
     font-weight: bold;
+
     word-break: break-all;
 }
 
 .currency {
     font-size: 25px;
+
     vertical-align: middle;
 }
 
+/* =========================
+   KEYPAD
+========================= */
+
 .keypad {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
     gap: 10px;
 }
 
 .key {
     height: 62px;
+
     border: none;
+
     border-radius: 15px;
+
     background: #f1f1f1;
+
     font-size: 24px;
+
     font-weight: bold;
+
     cursor: pointer;
+
     transition: 0.15s;
 }
 
 .key:active {
     transform: scale(0.95);
+
     background: #ddd;
 }
 
 .key.clear {
     background: #ffe8e8;
+
     color: #d00000;
 }
 
 .key.back {
     background: #fff3df;
+
     color: #b36b00;
 }
 
+/* =========================
+   GENERATE BUTTON
+========================= */
+
 .generate {
     width: 100%;
+
     margin-top: 15px;
+
     height: 58px;
+
     border: none;
+
     border-radius: 15px;
+
     background: #111;
+
     color: white;
+
     font-size: 18px;
+
     font-weight: bold;
+
     cursor: pointer;
 }
 
@@ -136,70 +252,117 @@ body {
     transform: scale(0.98);
 }
 
+/* =========================
+   QR SECTION
+========================= */
+
 .qr-section {
     display: none;
+
     text-align: center;
+
     margin-top: 25px;
+
     padding-top: 20px;
+
     border-top: 1px solid #eee;
 }
 
 .qr-section h2 {
     font-size: 20px;
+
     margin-bottom: 6px;
 }
 
 .qr-section p {
     color: #777;
+
     font-size: 14px;
+
     margin-bottom: 15px;
 }
 
 #qrcode {
     display: flex;
+
     justify-content: center;
+
     align-items: center;
+
     background: white;
 }
 
 #qrcode img,
 #qrcode canvas {
     max-width: 100%;
+
     height: auto;
 }
 
+/* =========================
+   PAYMENT AMOUNT
+========================= */
+
 .payment-amount {
     margin-top: 15px;
+
     font-size: 25px;
+
     font-weight: bold;
 }
 
 .note {
     margin-top: 10px;
+
     font-size: 13px;
+
     color: #777;
+
     line-height: 1.4;
 }
 
+/* =========================
+   NEW PAYMENT
+========================= */
+
 .new-payment {
     width: 100%;
+
     height: 50px;
+
     margin-top: 15px;
+
     border: 1px solid #ddd;
+
     background: white;
+
     border-radius: 12px;
+
     font-size: 16px;
+
     cursor: pointer;
 }
 
+/* =========================
+   FOOTER
+========================= */
+
 .footer {
     text-align: center;
+
     margin-top: 20px;
+
     color: #aaa;
+
     font-size: 12px;
 }
 
+/* =========================
+   MOBILE
+========================= */
+
 @media (max-width: 360px) {
+
     .app {
         padding: 18px;
     }
@@ -211,204 +374,495 @@ body {
     .amount {
         font-size: 36px;
     }
+
+    .right {
+        top: 12px;
+        left: 12px;
+
+        padding: 9px 14px;
+
+        font-size: 13px;
+    }
+
 }
+
 </style>
 </head>
 
 <body>
+
+<!-- =========================
+     RETURN TO BILLING
+========================= -->
+
 <button
     class="right"
-    onclick="window.location.href='https://iqbalkhan11296-coder.github.io/pandalam/billing'">
+    type="button"
+    onclick="window.location.href='https://iqbalkhan11296-coder.github.io/pandalam/billing.html'">
 
-    Return to billing 
+    ← Return to Billing
 
 </button>
+
+
 <div class="app">
 
+    <!-- HEADER -->
+
     <div class="header">
+
         <h1>UPI Payment</h1>
-        <p>Enter amount and generate QR</p>
+
+        <p>
+            Enter amount and generate QR
+        </p>
+
     </div>
+
+
+    <!-- UPI ID -->
 
     <div class="upi-id">
-        UPI ID: <strong>Q116103171@ybl</strong>
+
+        UPI ID:
+        <strong>
+            Q116103171@ybl
+        </strong>
+
     </div>
+
+
+    <!-- AMOUNT -->
 
     <div class="amount-box">
-        <div class="amount-label">PAYMENT AMOUNT</div>
+
+        <div class="amount-label">
+            PAYMENT AMOUNT
+        </div>
 
         <div class="amount">
-            <span class="currency">₹</span>
-            <span id="amount">0</span>
+
+            <span class="currency">
+                ₹
+            </span>
+
+            <span id="amount">
+                0
+            </span>
+
         </div>
+
     </div>
+
+
+    <!-- KEYPAD -->
 
     <div class="keypad">
 
-        <button class="key" type="button" onclick="press('1')">1</button>
-        <button class="key" type="button" onclick="press('2')">2</button>
-        <button class="key" type="button" onclick="press('3')">3</button>
+        <button
+            class="key"
+            type="button"
+            onclick="press('1')">
 
-        <button class="key" type="button" onclick="press('4')">4</button>
-        <button class="key" type="button" onclick="press('5')">5</button>
-        <button class="key" type="button" onclick="press('6')">6</button>
+            1
 
-        <button class="key" type="button" onclick="press('7')">7</button>
-        <button class="key" type="button" onclick="press('8')">8</button>
-        <button class="key" type="button" onclick="press('9')">9</button>
+        </button>
 
-        <button class="key clear" type="button" onclick="clearAmount()">
+        <button
+            class="key"
+            type="button"
+            onclick="press('2')">
+
+            2
+
+        </button>
+
+        <button
+            class="key"
+            type="button"
+            onclick="press('3')">
+
+            3
+
+        </button>
+
+
+        <button
+            class="key"
+            type="button"
+            onclick="press('4')">
+
+            4
+
+        </button>
+
+        <button
+            class="key"
+            type="button"
+            onclick="press('5')">
+
+            5
+
+        </button>
+
+        <button
+            class="key"
+            type="button"
+            onclick="press('6')">
+
+            6
+
+        </button>
+
+
+        <button
+            class="key"
+            type="button"
+            onclick="press('7')">
+
+            7
+
+        </button>
+
+        <button
+            class="key"
+            type="button"
+            onclick="press('8')">
+
+            8
+
+        </button>
+
+        <button
+            class="key"
+            type="button"
+            onclick="press('9')">
+
+            9
+
+        </button>
+
+
+        <button
+            class="key clear"
+            type="button"
+            onclick="clearAmount()">
+
             C
+
         </button>
 
-        <button class="key" type="button" onclick="press('0')">
+
+        <button
+            class="key"
+            type="button"
+            onclick="press('0')">
+
             0
+
         </button>
 
-        <button class="key back" type="button" onclick="backspace()">
+
+        <button
+            class="key back"
+            type="button"
+            onclick="backspace()">
+
             ←
+
         </button>
 
     </div>
 
-    <button class="generate" type="button" onclick="generateQR()">
+
+    <!-- GENERATE -->
+
+    <button
+        class="generate"
+        type="button"
+        onclick="generateQR()">
+
         Generate Payment QR
+
     </button>
 
-    <div class="qr-section" id="qrSection">
 
-        <h2>Scan to Pay</h2>
+    <!-- QR SECTION -->
 
-        <p>Scan this QR using any UPI app</p>
+    <div
+        class="qr-section"
+        id="qrSection">
+
+        <h2>
+            Scan to Pay
+        </h2>
+
+        <p>
+            Scan this QR using any UPI app
+        </p>
+
 
         <div id="qrcode"></div>
 
+
         <div class="payment-amount">
-            Pay ₹<span id="qrAmount">0</span>
+
+            Pay ₹
+            <span id="qrAmount">
+                0
+            </span>
+
         </div>
+
 
         <div class="note">
-            UPI ID<br>
-            <strong>Q116103171@ybl</strong>
+
+            UPI ID
+            <br>
+
+            <strong>
+                Q116103171@ybl
+            </strong>
+
         </div>
 
-        <button class="new-payment" type="button" onclick="newPayment()">
+
+        <button
+            class="new-payment"
+            type="button"
+            onclick="newPayment()">
+
             New Payment
+
         </button>
 
     </div>
 
+
+    <!-- FOOTER -->
+
     <div class="footer">
+
         UPI Payment QR Generator
+
     </div>
 
 </div>
 
+
 <script>
+
+/* =========================
+   UPI DETAILS
+========================= */
 
 const UPI_ID = "Q116103171@ybl";
 
 let amount = "";
 
+
+/* =========================
+   UPDATE AMOUNT
+========================= */
+
 function updateAmount() {
 
     if (amount === "") {
-        document.getElementById("amount").textContent = "0";
+
+        document
+            .getElementById("amount")
+            .textContent = "0";
+
     } else {
-        document.getElementById("amount").textContent =
-            Number(amount).toLocaleString("en-IN");
+
+        document
+            .getElementById("amount")
+            .textContent =
+            Number(amount)
+            .toLocaleString("en-IN");
+
     }
+
 }
+
+
+/* =========================
+   NUMBER KEYPAD
+========================= */
 
 function press(number) {
 
     /*
-       Prevent unnecessarily huge amounts.
-       Maximum: 9 digits.
+       Maximum 9 digits.
     */
+
     if (amount.length >= 9) {
         return;
     }
 
+
     /*
        Prevent leading zero.
     */
+
     if (amount === "0") {
+
         amount = number;
+
     } else {
+
         amount += number;
+
     }
 
+
     updateAmount();
+
 }
+
+
+/* =========================
+   CLEAR
+========================= */
 
 function clearAmount() {
 
     amount = "";
 
     updateAmount();
+
 }
+
+
+/* =========================
+   BACKSPACE
+========================= */
 
 function backspace() {
 
-    amount = amount.slice(0, -1);
+    amount =
+        amount.slice(0, -1);
 
     updateAmount();
+
 }
+
+
+/* =========================
+   GENERATE QR
+========================= */
 
 function generateQR() {
 
-    if (amount === "" || Number(amount) <= 0) {
+    if (
+        amount === ""
+        ||
+        Number(amount) <= 0
+    ) {
 
-        alert("Please enter a valid amount.");
+        alert(
+            "Please enter a valid amount."
+        );
 
         return;
     }
 
-    const numericAmount = Number(amount);
+
+    const numericAmount =
+        Number(amount);
+
 
     /*
        Standard UPI payment URI.
     */
+
     const upiURL =
         "upi://pay" +
-        "?pa=" + encodeURIComponent(UPI_ID) +
-        "&pn=" + encodeURIComponent("UPI Payment") +
-        "&am=" + numericAmount.toFixed(2) +
+
+        "?pa=" +
+        encodeURIComponent(UPI_ID) +
+
+        "&pn=" +
+        encodeURIComponent("UPI Payment") +
+
+        "&am=" +
+        numericAmount.toFixed(2) +
+
         "&cu=INR";
+
 
     /*
        Remove previous QR.
     */
-    document.getElementById("qrcode").innerHTML = "";
+
+    document
+        .getElementById("qrcode")
+        .innerHTML = "";
+
 
     /*
        Generate new QR.
     */
-    new QRCode(document.getElementById("qrcode"), {
-        text: upiURL,
-        width: 260,
-        height: 260,
-        correctLevel: QRCode.CorrectLevel.H
-    });
 
-    document.getElementById("qrAmount").textContent =
-        numericAmount.toLocaleString("en-IN");
+    new QRCode(
+        document.getElementById("qrcode"),
+        {
+            text: upiURL,
 
-    document.getElementById("qrSection").style.display = "block";
+            width: 260,
+
+            height: 260,
+
+            correctLevel:
+                QRCode.CorrectLevel.H
+        }
+    );
+
 
     /*
-       Scroll QR into view on mobile.
+       Display amount.
     */
-    setTimeout(function() {
 
-        document.getElementById("qrSection").scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
+    document
+        .getElementById("qrAmount")
+        .textContent =
+        numericAmount
+        .toLocaleString("en-IN");
 
-    }, 100);
+
+    /*
+       Show QR section.
+    */
+
+    document
+        .getElementById("qrSection")
+        .style.display = "block";
+
+
+    /*
+       Scroll QR into view.
+    */
+
+    setTimeout(
+        function() {
+
+            document
+                .getElementById("qrSection")
+                .scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+        },
+        100
+    );
+
 }
+
+
+/* =========================
+   NEW PAYMENT
+========================= */
 
 function newPayment() {
 
@@ -416,38 +870,86 @@ function newPayment() {
 
     updateAmount();
 
-    document.getElementById("qrcode").innerHTML = "";
 
-    document.getElementById("qrSection").style.display = "none";
+    document
+        .getElementById("qrcode")
+        .innerHTML = "";
+
+
+    document
+        .getElementById("qrSection")
+        .style.display = "none";
+
 
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
+
 }
 
-/*
-   Keyboard support.
-*/
-document.addEventListener("keydown", function(event) {
 
-    if (/^[0-9]$/.test(event.key)) {
-        press(event.key);
+/* =========================
+   KEYBOARD SUPPORT
+========================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        /*
+           Numbers
+        */
+
+        if (
+            /^[0-9]$/.test(event.key)
+        ) {
+
+            press(event.key);
+
+        }
+
+
+        /*
+           Backspace
+        */
+
+        if (
+            event.key === "Backspace"
+        ) {
+
+            backspace();
+
+        }
+
+
+        /*
+           Escape
+        */
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            clearAmount();
+
+        }
+
+
+        /*
+           Enter
+        */
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            generateQR();
+
+        }
+
     }
-
-    if (event.key === "Backspace") {
-        backspace();
-    }
-
-    if (event.key === "Escape") {
-        clearAmount();
-    }
-
-    if (event.key === "Enter") {
-        generateQR();
-    }
-
-});
+);
 
 </script>
 
