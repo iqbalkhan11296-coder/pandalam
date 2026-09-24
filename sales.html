@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
@@ -8,246 +7,1423 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>Sales Tracking</title>
+<title>Darky AI — Chaatarra</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="supabase.js?v=99"></script>
 
 <style>
 
 *{
     box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
 body{
-    margin:0;
-    background:#160005;
-    color:white;
-    font-family:Arial,sans-serif;
+
+    font-family:Inter,Arial,sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 50% -10%,
+            rgba(0,153,255,.16),
+            transparent 38%
+        ),
+
+        radial-gradient(
+            circle at 10% 50%,
+            rgba(0,80,255,.08),
+            transparent 35%
+        ),
+
+        radial-gradient(
+            circle at 90% 80%,
+            rgba(0,220,255,.07),
+            transparent 35%
+        ),
+
+        #030811;
+
+    color:#edf8ff;
+
+    min-height:100vh;
 }
 
-header{
-    background:#4b001f;
-    padding:20px;
-    text-align:center;
-    border-bottom:1px solid #d6a84f;
+button,
+input{
+
+    font:inherit;
 }
 
-header h1{
-    margin:0;
-    color:#f5d27a;
-    font-family:Georgia,serif;
-    letter-spacing:3px;
-}
+button{
 
-header p{
-    margin:6px 0 0;
-    color:#d9bd78;
-    font-size:12px;
-    letter-spacing:2px;
-}
-
-.container{
-    max-width:1200px;
-    margin:auto;
-    padding:18px;
-}
-
-.filters{
-    background:#29000e;
-    border:1px solid #9d7629;
-    border-radius:10px;
-    padding:14px;
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr auto;
-    gap:10px;
-    margin-bottom:18px;
-}
-
-.filters label{
-    color:#d9bd78;
-    font-size:12px;
-    display:block;
-    margin-bottom:5px;
-}
-
-.filters input,
-.filters select{
-    width:100%;
-    padding:10px;
-    border-radius:6px;
-    border:1px solid #8c6a2d;
-    background:white;
-    color:#222;
-}
-
-.load-btn{
-    align-self:end;
-    padding:10px 20px;
-    background:#d0a43d;
-    border:none;
-    border-radius:6px;
-    font-weight:bold;
-    color:#25000c;
-}
-
-.cards{
-    display:grid;
-    grid-template-columns:
-    repeat(auto-fit,minmax(190px,1fr));
-    gap:12px;
-    margin-bottom:25px;
-}
-
-.card{
-    background:linear-gradient(
-        145deg,
-        #310011,
-        #180006
-    );
-
-    border:1px solid #9d7629;
-    border-radius:12px;
-    padding:18px;
-}
-
-.card-title{
-    color:#c9ad70;
-    font-size:13px;
-}
-
-.card-value{
-    color:#f5d27a;
-    font-size:28px;
-    font-weight:bold;
-    margin-top:8px;
-}
-
-.section-title{
-    color:#f5d27a;
-    font-family:Georgia,serif;
-    font-size:22px;
-    margin:25px 0 12px;
-}
-
-.panel{
-    background:#f8f4ea;
-    color:#222;
-    border-radius:10px;
-    overflow:hidden;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-th{
-    background:#4b001f;
-    color:#f5d27a;
-    padding:12px;
-    text-align:left;
-}
-
-td{
-    padding:11px;
-    border-bottom:1px solid #ddd;
-}
-
-.error{
-    background:#5b0015;
-    border:1px solid #ff7777;
-    padding:12px;
-    border-radius:7px;
-    display:none;
-    margin-bottom:15px;
-}
-
-.empty{
-    text-align:center;
-    padding:25px;
-    color:#777;
-}
-
-.delete-btn{
-    background:#8b0000;
-    color:white;
-    border:none;
-    border-radius:5px;
-    padding:7px 10px;
-    font-size:12px;
-    font-weight:bold;
     cursor:pointer;
 }
 
-.delete-btn:disabled{
-    opacity:0.5;
-    cursor:not-allowed;
+.app{
+
+    max-width:1100px;
+
+    margin:auto;
+
+    min-height:100vh;
+
+    background:
+        radial-gradient(
+            circle at 50% 5%,
+            rgba(0,153,255,.12),
+            transparent 32%
+        ),
+
+        linear-gradient(
+            180deg,
+            rgba(3,12,25,.98),
+            rgba(2,8,18,.98)
+        );
+
+    position:relative;
 }
 
-.category-filter{
-    background:#29000e;
-    border:1px solid #9d7629;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:18px;
-}
 
-.category-filter-title{
-    color:#d9bd78;
-    font-size:12px;
-    margin-bottom:8px;
-}
+/* =========================================
+   TOP BAR
+========================================= */
 
-.category-buttons{
+.topbar{
+
+    height:76px;
+
+    padding:0 24px;
+
     display:flex;
-    gap:8px;
-    flex-wrap:wrap;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    border-bottom:
+        1px solid
+        rgba(70,190,255,.14);
+
+    background:
+        rgba(5,18,35,.72);
+
+    backdrop-filter:
+        blur(22px);
+
+    -webkit-backdrop-filter:
+        blur(22px);
+
+    position:relative;
+
+    z-index:20;
 }
 
-.category-btn{
-    flex:1;
-    min-width:90px;
-    padding:10px 14px;
-    border:1px solid #9d7629;
-    border-radius:6px;
-    background:#180006;
-    color:#f5d27a;
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.logo{
+
+    width:42px;
+    height:42px;
+
+    border-radius:14px;
+
+    display:grid;
+
+    place-items:center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #8ee7ff,
+            #0879d9 48%,
+            #06418f
+        );
+
+    color:#02101e;
+
+    font-weight:900;
+
+    font-size:20px;
+
+    box-shadow:
+        0 0 22px
+        rgba(0,174,255,.35),
+
+        inset 0 1px 1px
+        rgba(255,255,255,.55);
+}
+
+.brand-text strong{
+
+    display:block;
+
+    letter-spacing:2px;
+
+    font-size:16px;
+
+    color:#eaf9ff;
+
+    text-shadow:
+        0 0 14px
+        rgba(50,190,255,.25);
+}
+
+.brand-text span{
+
+    font-size:10px;
+
+    color:#6e91aa;
+
+    letter-spacing:1px;
+}
+
+.status{
+
+    font-size:10px;
+
+    color:#55d7ff;
+
+    border:
+        1px solid
+        rgba(40,190,255,.30);
+
+    padding:7px 11px;
+
+    border-radius:20px;
+
+    background:
+        rgba(0,130,210,.08);
+}
+
+
+/* =========================================
+   MAIN
+========================================= */
+
+.page{
+
+    padding:
+        22px
+        24px
+        120px;
+
+    min-height:
+        calc(100vh - 76px);
+}
+
+
+/* =========================================
+   LIVE BUSINESS OVERVIEW
+========================================= */
+
+.live-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin:
+        0 0 12px;
+
+}
+
+.live-title{
+
+    color:#7192a9;
+
+    font-size:10px;
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
+}
+
+.live-indicator{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    color:#56dfff;
+
+    font-size:9px;
+
+    letter-spacing:1px;
+}
+
+.live-dot{
+
+    width:6px;
+
+    height:6px;
+
+    border-radius:50%;
+
+    background:#42dcff;
+
+    box-shadow:
+        0 0 10px
+        rgba(50,220,255,.9);
+
+    animation:
+        livePulse 1.6s infinite;
+}
+
+@keyframes livePulse{
+
+    50%{
+        opacity:.35;
+        transform:scale(.75);
+    }
+
+}
+
+.live-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:10px;
+
+    margin-bottom:10px;
+}
+
+.live-card{
+
+    min-width:0;
+
+    padding:15px;
+
+    border:
+        1px solid
+        rgba(50,190,255,.16);
+
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(15,57,84,.50),
+            rgba(4,20,37,.66)
+        );
+
+    backdrop-filter:
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
+
+    box-shadow:
+        0 8px 25px
+        rgba(0,0,0,.18),
+
+        inset 0 1px 0
+        rgba(255,255,255,.04);
+
+    transition:.2s;
+}
+
+.live-card:hover{
+
+    border-color:
+        rgba(55,205,255,.32);
+
+    transform:
+        translateY(-1px);
+}
+
+.live-card-title{
+
+    color:#65869c;
+
+    font-size:9px;
+
+    letter-spacing:1.3px;
+
+    text-transform:uppercase;
+
+    white-space:nowrap;
+}
+
+.live-card-value{
+
+    margin-top:7px;
+
+    color:#e9faff;
+
+    font-size:22px;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    text-shadow:
+        0 0 16px
+        rgba(50,200,255,.15);
+}
+
+.live-card-value.primary{
+
+    color:#58d9ff;
+}
+
+.payment-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:10px;
+
+    margin-bottom:28px;
+}
+
+.payment-card{
+
+    padding:11px 14px;
+
+    border:
+        1px solid
+        rgba(50,170,255,.11);
+
+    border-radius:13px;
+
+    background:
+        rgba(5,28,47,.48);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+}
+
+.payment-name{
+
+    color:#62849a;
+
+    font-size:9px;
+
+    letter-spacing:1.2px;
+}
+
+.payment-value{
+
+    color:#bfeeff;
+
+    font-size:13px;
+
     font-weight:bold;
 }
 
-.category-btn.active{
-    background:#d0a43d;
-    color:#25000c;
+
+/* =========================================
+   HOME HEADER
+========================================= */
+
+.home-title{
+
+    margin-top:8px;
 }
 
-.filter-info{
-    color:#c9ad70;
+.home-title small{
+
+    color:#6f8da4;
+
+    font-size:13px;
+}
+
+.home-title h1{
+
+    margin-top:8px;
+
+    font-size:
+        clamp(30px,5vw,48px);
+
+    font-weight:500;
+
+    letter-spacing:-1px;
+
+    color:#eefaff;
+}
+
+.home-title h1 span{
+
+    color:#49cfff;
+
+    text-shadow:
+        0 0 22px
+        rgba(0,190,255,.30);
+}
+
+
+/* =========================================
+   DARKY ORB
+========================================= */
+
+.orb-wrap{
+
+    display:flex;
+
+    justify-content:center;
+
+    margin:
+        40px 0 28px;
+}
+
+.orb{
+
+    width:170px;
+
+    height:170px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 25%,
+            #dffaff,
+            #54d9ff 25%,
+            #087fcf 48%,
+            #063a78 68%,
+            #020d1b 90%
+        );
+
+    box-shadow:
+
+        0 0 35px
+        rgba(0,174,255,.35),
+
+        0 0 85px
+        rgba(0,95,255,.18),
+
+        inset 0 0 35px
+        rgba(255,255,255,.20);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    position:relative;
+}
+
+.orb::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:-14px;
+
+    border:
+        1px solid
+        rgba(48,198,255,.35);
+
+    border-radius:50%;
+}
+
+.orb::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:-28px;
+
+    border:
+        1px solid
+        rgba(48,160,255,.12);
+
+    border-radius:50%;
+}
+
+.orb-icon{
+
+    font-size:42px;
+
+    color:#e9fbff;
+
+    text-shadow:
+        0 0 15px #fff,
+
+        0 0 35px
+        rgba(0,210,255,.9);
+}
+
+
+/* =========================================
+   CHAT AREA
+========================================= */
+
+.chat-container{
+
+    width:min(800px,100%);
+
+    margin:
+        0 auto;
+}
+
+
+/* =========================================
+   CHAT MESSAGES
+========================================= */
+
+.chat-messages{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+    margin-bottom:14px;
+}
+
+.chat-row{
+
+    display:flex;
+
+    width:100%;
+}
+
+.chat-row.user{
+
+    justify-content:flex-end;
+}
+
+.chat-row.darky{
+
+    justify-content:flex-start;
+}
+
+.chat-bubble{
+
+    max-width:
+        min(82%,650px);
+
+    padding:
+        12px 15px;
+
+    border-radius:18px;
+
+    font-size:14px;
+
+    line-height:1.6;
+
+    white-space:pre-wrap;
+
+    word-wrap:break-word;
+}
+
+.user-bubble{
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d83d0,
+            #07529b
+        );
+
+    color:#f3fbff;
+
+    border:
+        1px solid
+        rgba(95,220,255,.30);
+
+    border-bottom-right-radius:6px;
+
+    box-shadow:
+        0 7px 22px
+        rgba(0,100,200,.18);
+}
+
+.darky-bubble{
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(18,63,94,.48),
+            rgba(4,22,42,.68)
+        );
+
+    color:#cce5ef;
+
+    border:
+        1px solid
+        rgba(45,190,255,.15);
+
+    border-bottom-left-radius:6px;
+
+    box-shadow:
+        0 7px 25px
+        rgba(0,0,0,.18);
+
+    backdrop-filter:
+        blur(18px);
+
+    -webkit-backdrop-filter:
+        blur(18px);
+}
+
+.chat-name{
+
+    font-size:9px;
+
+    letter-spacing:1.2px;
+
+    color:#5bd9ff;
+
+    margin-bottom:5px;
+
+    text-transform:uppercase;
+}
+
+.user-name{
+
+    color:#bcefff;
+
+    text-align:right;
+}
+
+
+/* =========================================
+   ASK BOX
+========================================= */
+
+.ask-box{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:8px 9px;
+
+    background:
+        rgba(7,28,50,.72);
+
+    border:
+        1px solid
+        rgba(50,190,255,.18);
+
+    border-radius:20px;
+
+    box-shadow:
+        0 12px 45px
+        rgba(0,0,0,.30),
+
+        inset 0 1px 0
+        rgba(255,255,255,.04);
+
+    backdrop-filter:
+        blur(20px);
+
+    -webkit-backdrop-filter:
+        blur(20px);
+
+    position:sticky;
+
+    bottom:95px;
+
+    z-index:5;
+}
+
+.ask-box:focus-within{
+
+    border-color:
+        rgba(40,195,255,.50);
+
+    box-shadow:
+        0 0 35px
+        rgba(0,155,255,.12);
+}
+
+.ask-box input{
+
+    flex:1;
+
+    min-width:0;
+
+    background:transparent;
+
+    border:none;
+
+    outline:none;
+
+    color:#eaf9ff;
+
+    padding:12px 8px;
+
+    font-size:14px;
+}
+
+.ask-box input::placeholder{
+
+    color:#527188;
+}
+
+.ask-button{
+
+    width:44px;
+
+    height:44px;
+
+    flex-shrink:0;
+
+    border-radius:14px;
+
+    border:
+        1px solid
+        rgba(50,180,255,.14);
+
+    background:
+        rgba(12,39,64,.65);
+
+    color:#5fd8ff;
+
+    font-size:19px;
+
+    transition:.2s;
+}
+
+.ask-button:hover{
+
+    background:
+        rgba(20,68,105,.75);
+
+    border-color:
+        rgba(50,200,255,.30);
+}
+
+.ask-send{
+
+    background:
+        linear-gradient(
+            145deg,
+            #72e3ff,
+            #168edb 55%,
+            #07529b
+        );
+
+    color:#02101b;
+
+    border:none;
+
+    box-shadow:
+        0 0 18px
+        rgba(0,174,255,.25);
+}
+
+
+/* =========================================
+   TYPING
+========================================= */
+
+.typing{
+
+    display:inline-flex;
+
+    gap:4px;
+
+    align-items:center;
+}
+
+.typing span{
+
+    width:5px;
+
+    height:5px;
+
+    background:#52d8ff;
+
+    border-radius:50%;
+
+    animation:
+        typing 1s infinite;
+
+    box-shadow:
+        0 0 8px
+        rgba(50,210,255,.7);
+}
+
+.typing span:nth-child(2){
+
+    animation-delay:.15s;
+}
+
+.typing span:nth-child(3){
+
+    animation-delay:.3s;
+}
+
+@keyframes typing{
+
+    50%{
+
+        opacity:.2;
+
+        transform:
+            translateY(-3px);
+    }
+}
+
+
+/* =========================================
+   VOICE PAGE
+========================================= */
+
+.voice-page{
+
+    display:none;
+
+    text-align:center;
+}
+
+.voice-page.active{
+
+    display:block;
+}
+
+.voice-center{
+
+    max-width:650px;
+
+    margin:auto;
+
+    padding-top:10px;
+}
+
+.page-heading{
+
+    text-align:left;
+
+    margin-bottom:10px;
+}
+
+.page-heading h2{
+
+    font-size:27px;
+
+    font-weight:500;
+
+    color:#e9f9ff;
+}
+
+.page-heading p{
+
+    color:#638298;
+
     font-size:12px;
-    margin-top:9px;
+
+    margin-top:5px;
 }
 
-@media(max-width:750px){
+.voice-orb{
 
-    .filters{
-        grid-template-columns:1fr;
+    width:230px;
+
+    height:230px;
+
+    border-radius:50%;
+
+    margin:
+        55px auto 35px;
+
+    display:grid;
+
+    place-items:center;
+
+    background:
+        radial-gradient(
+            circle at 35% 28%,
+            #e8fbff,
+            #58d9ff 30%,
+            #0784d6 50%,
+            #06386e 70%,
+            #020b17
+        );
+
+    box-shadow:
+        0 0 55px
+        rgba(0,174,255,.30),
+
+        0 0 110px
+        rgba(0,85,255,.14),
+
+        inset 0 0 40px
+        rgba(255,255,255,.18);
+
+    border:
+        1px solid
+        rgba(60,205,255,.35);
+
+    transition:.3s;
+}
+
+.voice-orb.listening{
+
+    animation:
+        pulse 1.1s infinite;
+
+    box-shadow:
+
+        0 0 0 15px
+        rgba(0,180,255,.07),
+
+        0 0 0 30px
+        rgba(0,120,255,.04),
+
+        0 0 80px
+        rgba(0,190,255,.38);
+}
+
+.voice-orb.speaking{
+
+    animation:
+        speakPulse .55s infinite
+        alternate;
+}
+
+@keyframes pulse{
+
+    50%{
+        transform:scale(1.07);
+    }
+}
+
+@keyframes speakPulse{
+
+    to{
+        transform:scale(1.04);
+    }
+}
+
+.voice-mic{
+
+    font-size:55px;
+
+    text-shadow:
+        0 0 18px
+        rgba(255,255,255,.75),
+
+        0 0 30px
+        rgba(0,210,255,.7);
+}
+
+.voice-status{
+
+    font-size:22px;
+
+    font-weight:500;
+
+    color:#e8f9ff;
+}
+
+.voice-hint{
+
+    color:#648399;
+
+    font-size:13px;
+
+    margin-top:8px;
+}
+
+.voice-transcript{
+
+    min-height:80px;
+
+    margin:
+        30px auto;
+
+    padding:18px;
+
+    max-width:600px;
+
+    border:
+        1px solid
+        rgba(50,180,255,.13);
+
+    background:
+        rgba(7,29,49,.48);
+
+    border-radius:18px;
+
+    color:#9ebdcd;
+
+    font-size:14px;
+
+    line-height:1.5;
+
+    white-space:pre-wrap;
+
+    backdrop-filter:
+        blur(18px);
+}
+
+.voice-button{
+
+    width:72px;
+
+    height:72px;
+
+    border-radius:50%;
+
+    border:
+        1px solid
+        rgba(50,195,255,.35);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(20,69,101,.80),
+            rgba(4,28,52,.90)
+        );
+
+    color:#61dfff;
+
+    font-size:28px;
+
+    transition:.2s;
+}
+
+.voice-button:hover{
+
+    transform:scale(1.05);
+
+    box-shadow:
+        0 0 30px
+        rgba(0,185,255,.22);
+}
+
+
+/* =========================================
+   SECONDARY PAGES
+========================================= */
+
+.secondary-page{
+
+    display:none;
+}
+
+.secondary-page.active{
+
+    display:block;
+}
+
+.data-card{
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(17,56,82,.42),
+            rgba(4,22,41,.58)
+        );
+
+    border:
+        1px solid
+        rgba(50,180,255,.14);
+
+    border-radius:20px;
+
+    padding:22px;
+
+    margin-top:20px;
+
+    max-width:800px;
+
+    backdrop-filter:
+        blur(18px);
+}
+
+.data-card h3{
+
+    font-size:15px;
+
+    margin-bottom:8px;
+
+    color:#dff6ff;
+}
+
+.data-card p{
+
+    color:#7190a4;
+
+    line-height:1.6;
+
+    font-size:13px;
+}
+
+.quick-card{
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(18,55,82,.42),
+            rgba(4,22,40,.55)
+        );
+
+    border:
+        1px solid
+        rgba(50,180,255,.14);
+
+    border-radius:18px;
+
+    padding:20px 14px;
+
+    color:#e7f7ff;
+
+    transition:.2s;
+
+    text-align:left;
+
+    width:100%;
+
+    margin-top:12px;
+}
+
+.quick-card:hover{
+
+    border-color:
+        rgba(45,200,255,.40);
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* =========================================
+   BOTTOM NAV
+========================================= */
+
+.bottom-nav{
+
+    position:fixed;
+
+    left:50%;
+
+    bottom:15px;
+
+    transform:
+        translateX(-50%);
+
+    width:
+        min(700px,calc(100% - 24px));
+
+    background:
+        rgba(4,20,37,.82);
+
+    backdrop-filter:
+        blur(24px);
+
+    -webkit-backdrop-filter:
+        blur(24px);
+
+    border:
+        1px solid
+        rgba(50,190,255,.17);
+
+    border-radius:23px;
+
+    padding:8px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(5,1fr);
+
+    z-index:100;
+
+    box-shadow:
+        0 15px 45px
+        rgba(0,0,0,.35),
+
+        inset 0 1px 0
+        rgba(255,255,255,.05);
+}
+
+.nav-btn{
+
+    background:transparent;
+
+    border:0;
+
+    color:#527084;
+
+    padding:9px 4px;
+
+    border-radius:16px;
+
+    font-size:10px;
+
+    transition:.2s;
+}
+
+.nav-btn .nav-icon{
+
+    display:block;
+
+    font-size:18px;
+
+    margin-bottom:4px;
+}
+
+.nav-btn.active{
+
+    color:#57d9ff;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(0,150,230,.15),
+            rgba(0,85,180,.08)
+        );
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:700px){
+
+    .topbar{
+
+        padding:0 16px;
     }
 
-    .load-btn{
-        width:100%;
+    .page{
+
+        padding:
+            18px
+            16px
+            110px;
     }
 
-    .category-btn{
-        min-width:70px;
+    .live-grid{
+
+        grid-template-columns:
+            repeat(2,1fr);
     }
 
-    .panel{
-        overflow-x:auto;
+    .live-card{
+
+        padding:13px;
     }
 
-    table{
-        min-width:760px;
+    .live-card-value{
+
+        font-size:20px;
+    }
+
+    .payment-grid{
+
+        grid-template-columns:
+            repeat(3,1fr);
+
+        gap:7px;
+    }
+
+    .payment-card{
+
+        padding:
+            10px 8px;
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:4px;
+    }
+
+    .orb{
+
+        width:150px;
+
+        height:150px;
+    }
+
+    .chat-bubble{
+
+        max-width:88%;
+    }
+
+    .bottom-nav{
+
+        width:
+            calc(100% - 16px);
+
+        bottom:8px;
+    }
+
+    .nav-btn{
+
+        font-size:9px;
+    }
+
+    .ask-box input{
+
+        font-size:13px;
+    }
+
+}
+
+@media(max-width:400px){
+
+    .brand-text span{
+
+        display:none;
+    }
+
+    .status{
+
+        font-size:9px;
+
+        padding:
+            6px 8px;
+    }
+
+    .live-card-title{
+
+        font-size:8px;
+    }
+
+    .live-card-value{
+
+        font-size:18px;
+    }
+
+    .payment-name{
+
+        font-size:8px;
+    }
+
+    .payment-value{
+
+        font-size:12px;
     }
 
 }
@@ -256,439 +1432,1202 @@ td{
 
 </head>
 
+
 <body>
 
-<header>
+<div class="app">
 
-<h1>CHAATARRA</h1>
 
-<p>SALES TRACKING</p>
+<!-- =====================================
+     TOP BAR
+===================================== -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="logo">
+            D
+        </div>
+
+        <div class="brand-text">
+
+            <strong>
+                DARKY AI
+            </strong>
+
+            <span>
+                CHAATARRA ASSISTANT
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="status"
+        id="connectionStatus">
+
+        ● READY
+
+    </div>
 
 </header>
 
 
-<div class="container">
 
-<div id="errorBox"
-class="error">
+<!-- =====================================
+     HOME
+===================================== -->
+
+<section
+    id="homePage"
+    class="page active">
+
+
+    <!-- =================================
+         LIVE SALES
+    ================================== -->
+
+    <div class="live-header">
+
+        <div class="live-title">
+            Live Business Overview
+        </div>
+
+        <div class="live-indicator">
+
+            <span class="live-dot"></span>
+
+            LIVE
+
+        </div>
+
+    </div>
+
+
+    <div class="live-grid">
+
+
+        <div class="live-card">
+
+            <div class="live-card-title">
+                Today's Sales
+            </div>
+
+            <div
+                class="live-card-value primary"
+                id="liveTotalSales">
+
+                ₹0
+
+            </div>
+
+        </div>
+
+
+        <div class="live-card">
+
+            <div class="live-card-title">
+                Orders
+            </div>
+
+            <div
+                class="live-card-value"
+                id="liveTotalOrders">
+
+                0
+
+            </div>
+
+        </div>
+
+
+        <div class="live-card">
+
+            <div class="live-card-title">
+                Items Sold
+            </div>
+
+            <div
+                class="live-card-value"
+                id="liveTotalItems">
+
+                0
+
+            </div>
+
+        </div>
+
+
+        <div class="live-card">
+
+            <div class="live-card-title">
+                Average Bill
+            </div>
+
+            <div
+                class="live-card-value"
+                id="liveAverageBill">
+
+                ₹0
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="payment-grid">
+
+
+        <div class="payment-card">
+
+            <div class="payment-name">
+                CASH
+            </div>
+
+            <div
+                class="payment-value"
+                id="liveCash">
+
+                ₹0
+
+            </div>
+
+        </div>
+
+
+        <div class="payment-card">
+
+            <div class="payment-name">
+                UPI
+            </div>
+
+            <div
+                class="payment-value"
+                id="liveUPI">
+
+                ₹0
+
+            </div>
+
+        </div>
+
+
+        <div class="payment-card">
+
+            <div class="payment-name">
+                CARD
+            </div>
+
+            <div
+                class="payment-value"
+                id="liveCard">
+
+                ₹0
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================
+         HOME TITLE
+    ================================== -->
+
+    <div class="home-title">
+
+        <small id="greeting">
+            Good evening.
+        </small>
+
+        <h1>
+
+            Hello,
+            <span>
+                Iqbal
+            </span>
+
+        </h1>
+
+    </div>
+
+
+
+    <!-- =================================
+         DARKY ORB
+    ================================== -->
+
+    <div class="orb-wrap">
+
+        <div
+            class="orb"
+            id="homeOrb">
+
+            <div class="orb-icon">
+                ✦
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================
+         CHAT
+    ================================== -->
+
+    <div class="chat-container">
+
+        <div
+            id="chatMessages"
+            class="chat-messages">
+
+        </div>
+
+
+        <div class="ask-box">
+
+
+            <button
+                class="ask-button"
+                onclick="openVoice()">
+
+                🎙
+
+            </button>
+
+
+            <input
+                id="askInput"
+                type="text"
+                placeholder="Ask Darky anything..."
+                autocomplete="off"
+            >
+
+
+            <button
+                class="ask-button ask-send"
+                onclick="sendHomeQuestion()">
+
+                ➤
+
+            </button>
+
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================
+     VOICE PAGE
+===================================== -->
+
+<section
+    id="voicePage"
+    class="page voice-page">
+
+
+    <div class="voice-center">
+
+
+        <div class="page-heading">
+
+            <h2>
+                Voice Command
+            </h2>
+
+            <p>
+                Speak naturally to Darky
+            </p>
+
+        </div>
+
+
+        <div
+            id="voiceOrb"
+            class="voice-orb">
+
+            <div
+                class="voice-mic"
+                id="voiceMicIcon">
+
+                🎙
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="voiceStatus"
+            class="voice-status">
+
+            Ready to listen
+
+        </div>
+
+
+        <div
+            id="voiceHint"
+            class="voice-hint">
+
+            Tap the microphone and speak
+
+        </div>
+
+
+        <div
+            id="voiceTranscript"
+            class="voice-transcript">
+
+            Your voice command will appear here.
+
+        </div>
+
+
+        <button
+            id="voiceButton"
+            class="voice-button"
+            onclick="startVoiceCommand()">
+
+            🎙
+
+        </button>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================
+     STOCK PAGE
+===================================== -->
+
+<section
+    id="stockPage"
+    class="page secondary-page">
+
+
+    <div class="page-heading">
+
+        <h2>
+            Stock
+        </h2>
+
+        <p>
+            Inventory information
+        </p>
+
+    </div>
+
+
+    <div class="data-card">
+
+        <h3>
+            Inventory Assistant
+        </h3>
+
+        <p>
+            Ask Darky about current stock,
+            low-stock items, vendors,
+            purchase prices or stock movements.
+        </p>
+
+    </div>
+
+
+    <button
+        class="quick-card"
+        onclick="askQuick('Give me the current inventory overview.')">
+
+        📦 &nbsp;
+        Check current inventory
+
+    </button>
+
+
+    <button
+        class="quick-card"
+        onclick="askQuick('Show me the recent inventory history.')">
+
+        ↕ &nbsp;
+        Check stock history
+
+    </button>
+
+</section>
+
+
+
+<!-- =====================================
+     ORDERS PAGE
+===================================== -->
+
+<section
+    id="ordersPage"
+    class="page secondary-page">
+
+
+    <div class="page-heading">
+
+        <h2>
+            Orders
+        </h2>
+
+        <p>
+            Restaurant order information
+        </p>
+
+    </div>
+
+
+    <div class="data-card">
+
+        <h3>
+            Order Assistant
+        </h3>
+
+        <p>
+            Ask Darky about recent orders,
+            order totals, customer names,
+            tables or order details.
+        </p>
+
+    </div>
+
+
+    <button
+        class="quick-card"
+        onclick="askQuick('Show me the latest orders.')">
+
+        🧾 &nbsp;
+        Show latest orders
+
+    </button>
+
+</section>
+
+
+
+<!-- =====================================
+     REPORTS PAGE
+===================================== -->
+
+<section
+    id="reportsPage"
+    class="page secondary-page">
+
+
+    <div class="page-heading">
+
+        <h2>
+            Reports
+        </h2>
+
+        <p>
+            Business information through Darky
+        </p>
+
+    </div>
+
+
+    <div class="data-card">
+
+        <h3>
+            Today's Live Report
+        </h3>
+
+        <p>
+            Darky is connected to the same
+            sales data used by the Sales page.
+            The figures above refresh automatically.
+        </p>
+
+    </div>
+
+
+    <button
+        class="quick-card"
+        onclick="askQuick('Give me a summary of today\\'s restaurant activity.')">
+
+        📊 &nbsp;
+        Today's summary
+
+    </button>
+
+</section>
+
+
+
+<!-- =====================================
+     BOTTOM NAV
+===================================== -->
+
+<nav class="bottom-nav">
+
+
+    <button
+        class="nav-btn active"
+        data-page="homePage"
+        onclick="openPage('homePage')">
+
+        <span class="nav-icon">
+            ⌂
+        </span>
+
+        Home
+
+    </button>
+
+
+    <button
+        class="nav-btn"
+        data-page="voicePage"
+        onclick="openPage('voicePage')">
+
+        <span class="nav-icon">
+            🎙
+        </span>
+
+        Voice
+
+    </button>
+
+
+    <button
+        class="nav-btn"
+        data-page="stockPage"
+        onclick="openPage('stockPage')">
+
+        <span class="nav-icon">
+            📦
+        </span>
+
+        Stock
+
+    </button>
+
+
+    <button
+        class="nav-btn"
+        data-page="ordersPage"
+        onclick="openPage('ordersPage')">
+
+        <span class="nav-icon">
+            🧾
+        </span>
+
+        Orders
+
+    </button>
+
+
+    <button
+        class="nav-btn"
+        data-page="reportsPage"
+        onclick="openPage('reportsPage')">
+
+        <span class="nav-icon">
+            ▥
+        </span>
+
+        Reports
+
+    </button>
+
+
+</nav>
+
+
 </div>
 
 
-<div class="filters">
 
-<div>
-
-<label>FROM</label>
-
-<input
-type="date"
-id="fromDate">
-
-</div>
-
-
-<div>
-
-<label>TO</label>
-
-<input
-type="date"
-id="toDate">
-
-</div>
-
-
-<div>
-
-<label>CATEGORY</label>
-
-<select id="categoryFilter"
-onchange="applyCategoryFilter()">
-
-<option value="All">
-All Categories
-</option>
-
-<option value="Chaat">
-Chaat
-</option>
-
-<option value="Drinks">
-Drinks
-</option>
-
-<option value="Combos">
-Combos
-</option>
-
-</select>
-
-</div>
-
-
-<button
-class="load-btn"
-onclick="loadSales()">
-
-VIEW SALES
-
-</button>
-
-</div>
-
-
-<div class="category-filter">
-
-<div class="category-filter-title">
-FILTER SALES BY CATEGORY
-</div>
-
-<div class="category-buttons">
-
-<button
-class="category-btn active"
-data-category="All"
-onclick="selectCategory('All',this)">
-
-ALL
-
-</button>
-
-<button
-class="category-btn"
-data-category="Chaat"
-onclick="selectCategory('Chaat',this)">
-
-CHAAT
-
-</button>
-
-<button
-class="category-btn"
-data-category="Drinks"
-onclick="selectCategory('Drinks',this)">
-
-DRINKS
-
-</button>
-
-<button
-class="category-btn"
-data-category="Combos"
-onclick="selectCategory('Combos',this)">
-
-COMBOS
-
-</button>
-
-</div>
-
-<div
-id="filterInfo"
-class="filter-info">
-
-Showing all categories
-
-</div>
-
-</div>
-
-
-<div class="cards">
-
-<div class="card">
-
-<div class="card-title">
-TOTAL SALES
-</div>
-
-<div
-class="card-value"
-id="totalSales">
-
-₹0
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="card-title">
-TOTAL ORDERS
-</div>
-
-<div
-class="card-value"
-id="totalOrders">
-
-0
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="card-title">
-TOTAL ITEMS SOLD
-</div>
-
-<div
-class="card-value"
-id="totalItems">
-
-0
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="card-title">
-AVERAGE BILL
-</div>
-
-<div
-class="card-value"
-id="averageBill">
-
-₹0
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="section-title">
-PAYMENT BREAKDOWN
-</div>
-
-<div class="cards">
-
-<div class="card">
-
-<div class="card-title">
-CASH
-</div>
-
-<div class="card-value"
-id="cashSales">
-
-₹0
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="card-title">
-UPI
-</div>
-
-<div class="card-value"
-id="upiSales">
-
-₹0
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="card-title">
-CARD
-</div>
-
-<div class="card-value"
-id="cardSales">
-
-₹0
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="section-title">
-ITEM SALES
-</div>
-
-<div class="panel">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Item</th>
-
-<th>Quantity</th>
-
-<th>Revenue</th>
-
-</tr>
-
-</thead>
-
-<tbody id="itemTable">
-
-<tr>
-
-<td colspan="3"
-class="empty">
-
-Loading...
-
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-
-<div class="section-title">
-ORDERS
-</div>
-
-<div class="panel">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Order</th>
-
-<th>Date</th>
-
-<th>Customer</th>
-
-<th>Payment</th>
-
-<th>Total</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody id="orderTable">
-
-<tr>
-
-<td colspan="6"
-class="empty">
-
-Loading...
-
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
 <script>
 
-let allOrders = [];
 
-let currentCategory = "All";
+/* =========================================
+   SUPABASE
+========================================= */
+
+const SUPABASE_URL =
+"https://ucqeyhcycwksiubmlilg.supabase.co";
 
 
-function localDateString(date){
+const SUPABASE_KEY =
+"sb_publishable_YdIvl7IqdpT0UZOHBumEiw_ZThYEsgV";
+
+
+const SUPABASE_FUNCTION_URL =
+"https://ucqeyhcycwksiubmlilg.supabase.co/functions/v1/restaurant-ai";
+
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const askInput =
+    document.getElementById(
+        "askInput"
+    );
+
+
+const connectionStatus =
+    document.getElementById(
+        "connectionStatus"
+    );
+
+
+const chatMessages =
+    document.getElementById(
+        "chatMessages"
+    );
+
+
+
+/* =========================================
+   PAGE NAVIGATION
+========================================= */
+
+function openPage(pageId){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(page=>{
+
+            page.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    document
+        .getElementById(pageId)
+        .classList.add("active");
+
+
+    document
+        .querySelectorAll(".nav-btn")
+        .forEach(button=>{
+
+            button.classList.remove(
+                "active"
+            );
+
+
+            if(
+                button.dataset.page ===
+                pageId
+            ){
+
+                button.classList.add(
+                    "active"
+                );
+
+            }
+
+        });
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+
+/* =========================================
+   CHAT MESSAGE
+========================================= */
+
+function addChatMessage(
+    sender,
+    message,
+    typing = false
+){
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+
+    row.className =
+        "chat-row " +
+        (
+            sender === "user"
+            ? "user"
+            : "darky"
+        );
+
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+
+    bubble.className =
+        "chat-bubble " +
+        (
+            sender === "user"
+            ? "user-bubble"
+            : "darky-bubble"
+        );
+
+
+    if(sender === "user"){
+
+        bubble.innerHTML =
+            `<div class="chat-name user-name">
+                You
+            </div>`;
+
+    }
+    else{
+
+        bubble.innerHTML =
+            `<div class="chat-name">
+                Darky AI
+            </div>`;
+
+    }
+
+
+    const content =
+        document.createElement(
+            "div"
+        );
+
+
+    if(typing){
+
+        content.innerHTML = `
+
+            <div class="typing">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+        `;
+
+    }
+    else{
+
+        content.textContent =
+            message;
+
+    }
+
+
+    bubble.appendChild(
+        content
+    );
+
+
+    row.appendChild(
+        bubble
+    );
+
+
+    chatMessages.appendChild(
+        row
+    );
+
+
+    scrollChatToBottom();
+
+
+    return {
+        row,
+        bubble,
+        content
+    };
+
+}
+
+
+
+/* =========================================
+   CHAT SCROLL
+========================================= */
+
+function scrollChatToBottom(){
+
+    setTimeout(
+        function(){
+
+            window.scrollTo({
+                top:
+                    document.body.scrollHeight,
+                behavior:"smooth"
+            });
+
+        },
+        50
+    );
+
+}
+
+
+
+/* =========================================
+   HOME QUESTION
+========================================= */
+
+function sendHomeQuestion(){
+
+    const message =
+        askInput.value.trim();
+
+
+    if(!message){
+
+        return;
+
+    }
+
+
+    askInput.value = "";
+
+
+    addChatMessage(
+        "user",
+        message
+    );
+
+
+    sendMessageToAI(
+        message
+    );
+
+}
+
+
+
+/* =========================================
+   ENTER KEY
+========================================= */
+
+askInput.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key ===
+            "Enter"
+        ){
+
+            sendHomeQuestion();
+
+        }
+
+    }
+);
+
+
+
+/* =========================================
+   QUICK ACTIONS
+========================================= */
+
+function askQuick(message){
+
+    openPage(
+        "homePage"
+    );
+
+
+    addChatMessage(
+        "user",
+        message
+    );
+
+
+    sendMessageToAI(
+        message
+    );
+
+}
+
+
+
+/* =========================================
+   AI REQUEST
+========================================= */
+
+async function sendMessageToAI(
+    message
+){
+
+    const darkyMessage =
+        addChatMessage(
+            "darky",
+            "",
+            true
+        );
+
+
+    connectionStatus.textContent =
+        "● THINKING";
+
+
+    try{
+
+        const response =
+            await fetch(
+                SUPABASE_FUNCTION_URL,
+                {
+
+                    method:"POST",
+
+                    headers:{
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            SUPABASE_KEY
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            message:
+                                message
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Darky response:",
+            data
+        );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.error ||
+                "Request failed"
+            );
+
+        }
+
+
+        const answer =
+            data.reply ||
+            data.answer ||
+            "I couldn't get a response right now.";
+
+
+        darkyMessage.content.textContent =
+            answer;
+
+
+        connectionStatus.textContent =
+            "● READY";
+
+
+        scrollChatToBottom();
+
+
+        speakReply(
+            answer
+        );
+
+
+    }
+    catch(error){
+
+        console.error(
+            "Darky connection error:",
+            error
+        );
+
+
+        darkyMessage.content.textContent =
+            "I'm having trouble connecting right now. Please try again.";
+
+
+        connectionStatus.textContent =
+            "● CONNECTION ERROR";
+
+
+        scrollChatToBottom();
+
+    }
+
+}
+
+
+
+/* =========================================
+   LIVE SALES
+========================================= */
+
+function localDateString(
+    date
+){
 
     const year =
         date.getFullYear();
 
+
     const month =
         String(
             date.getMonth()+1
-        ).padStart(2,"0");
+        ).padStart(
+            2,
+            "0"
+        );
+
 
     const day =
         String(
             date.getDate()
-        ).padStart(2,"0");
+        ).padStart(
+            2,
+            "0"
+        );
+
 
     return `${year}-${month}-${day}`;
 
 }
 
 
-function setDefaultDates(){
 
-    const today =
-        new Date();
+/* =========================================
+   LOAD LIVE SALES
+========================================= */
 
-    document.getElementById(
-        "fromDate"
-    ).value =
-        localDateString(today);
+async function loadLiveSales(){
 
-    document.getElementById(
-        "toDate"
-    ).value =
-        localDateString(today);
+    try{
 
-}
+        const today =
+            localDateString(
+                new Date()
+            );
 
 
-function selectCategory(category, button){
+        /*
+         * Same date logic as the
+         * Sales Tracking page.
+         */
 
-    currentCategory = category;
+        const start =
+            new Date(
+                today +
+                "T00:00:00"
+            ).toISOString();
 
-    document.querySelectorAll(
-        ".category-btn"
-    ).forEach(btn=>{
 
-        btn.classList.remove(
-            "active"
+        const endDate =
+            new Date(
+                today +
+                "T00:00:00"
+            );
+
+
+        endDate.setDate(
+            endDate.getDate()+1
         );
 
-    });
+
+        const end =
+            endDate.toISOString();
 
 
-    button.classList.add(
-        "active"
-    );
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+
+            .from(
+                "chaat_orders"
+            )
+
+            .select("*")
+
+            .gte(
+                "created_at",
+                start
+            )
+
+            .lt(
+                "created_at",
+                end
+            );
 
 
-    document.getElementById(
-        "categoryFilter"
-    ).value = category;
+        if(error){
+
+            console.error(
+                "Live sales error:",
+                error
+            );
+
+            return;
+
+        }
 
 
-    updateFilterInfo();
+        const orders =
+            data || [];
 
 
-    if(allOrders.length){
+        calculateLiveSales(
+            orders
+        );
 
-        calculateSales(
-            getFilteredOrders()
+
+    }
+    catch(error){
+
+        console.error(
+            "Live sales connection error:",
+            error
         );
 
     }
@@ -696,249 +2635,14 @@ function selectCategory(category, button){
 }
 
 
-function applyCategoryFilter(){
 
-    const select =
-        document.getElementById(
-            "categoryFilter"
-        );
+/* =========================================
+   CALCULATE LIVE SALES
+========================================= */
 
-    currentCategory =
-        select.value;
-
-
-    document.querySelectorAll(
-        ".category-btn"
-    ).forEach(btn=>{
-
-        btn.classList.toggle(
-            "active",
-            btn.dataset.category ===
-            currentCategory
-        );
-
-    });
-
-
-    updateFilterInfo();
-
-
-    if(allOrders.length){
-
-        calculateSales(
-            getFilteredOrders()
-        );
-
-    }
-
-}
-
-
-function updateFilterInfo(){
-
-    const info =
-        document.getElementById(
-            "filterInfo"
-        );
-
-
-    if(currentCategory === "All"){
-
-        info.textContent =
-            "Showing all categories";
-
-    }else{
-
-        info.textContent =
-            "Showing only " +
-            currentCategory +
-            " sales";
-
-    }
-
-}
-
-
-function orderHasCategory(order, category){
-
-    if(category === "All"){
-        return true;
-    }
-
-
-    if(!Array.isArray(order.items)){
-        return false;
-    }
-
-
-    return order.items.some(item=>{
-
-        return normalizeCategory(
-            item.category
-        ) === category;
-
-    });
-
-}
-
-
-function normalizeCategory(category){
-
-    const value =
-        String(
-            category || ""
-        ).trim().toLowerCase();
-
-
-    if(value === "chaat"){
-        return "Chaat";
-    }
-
-    if(value === "drinks"){
-        return "Drinks";
-    }
-
-    if(value === "combos"){
-        return "Combos";
-    }
-
-
-    return String(category || "").trim();
-
-}
-
-
-function getFilteredOrders(){
-
-    if(currentCategory === "All"){
-
-        return allOrders;
-
-    }
-
-
-    return allOrders.filter(order=>{
-
-        return orderHasCategory(
-            order,
-            currentCategory
-        );
-
-    });
-
-}
-
-
-async function loadSales(){
-
-    document.getElementById(
-        "errorBox"
-    ).style.display="none";
-
-
-    const from =
-        document.getElementById(
-            "fromDate"
-        ).value;
-
-
-    const to =
-        document.getElementById(
-            "toDate"
-        ).value;
-
-
-    if(!from || !to){
-
-        showError(
-            "Please select both dates."
-        );
-
-        return;
-
-    }
-
-
-    if(from > to){
-
-        showError(
-            "From date cannot be after To date."
-        );
-
-        return;
-
-    }
-
-
-    const start =
-        new Date(
-            from+"T00:00:00"
-        ).toISOString();
-
-
-    const endDate =
-        new Date(
-            to+"T00:00:00"
-        );
-
-
-    endDate.setDate(
-        endDate.getDate()+1
-    );
-
-
-    const end =
-        endDate.toISOString();
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-        .from("chaat_orders")
-        .select("*")
-        .gte(
-            "created_at",
-            start
-        )
-        .lt(
-            "created_at",
-            end
-        )
-        .order(
-            "created_at",
-            {
-                ascending:false
-            }
-        );
-
-
-    if(error){
-
-        console.error(error);
-
-        showError(
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    allOrders =
-        data || [];
-
-
-    calculateSales(
-        getFilteredOrders()
-    );
-
-}
-
-
-function calculateSales(orders){
+function calculateLiveSales(
+    orders
+){
 
     let totalSales = 0;
 
@@ -951,611 +2655,756 @@ function calculateSales(orders){
     let card = 0;
 
 
-    const itemSales = {};
+    orders.forEach(
+        order=>{
+
+            const total =
+                Number(
+                    order.total ||
+                    0
+                );
 
 
-    orders.forEach(order=>{
-
-        const total =
-            Number(
-                order.total || 0
-            );
+            totalSales +=
+                total;
 
 
-        /*
-         * For ALL category:
-         * use the complete order total.
-         */
+            if(
+                order.payment_method ===
+                "Cash"
+            ){
 
-        if(currentCategory === "All"){
-
-            totalSales += total;
-
-
-            if(order.payment_method === "Cash"){
                 cash += total;
+
             }
 
-            if(order.payment_method === "UPI"){
+
+            if(
+                order.payment_method ===
+                "UPI"
+            ){
+
                 upi += total;
+
             }
 
-            if(order.payment_method === "Card"){
+
+            if(
+                order.payment_method ===
+                "Card"
+            ){
+
                 card += total;
+
             }
 
-        }
 
+            if(
+                Array.isArray(
+                    order.items
+                )
+            ){
 
-        /*
-         * For a specific category:
-         * calculate only the items belonging
-         * to that category.
-         */
+                order.items.forEach(
+                    item=>{
 
-        if(Array.isArray(order.items)){
-
-            order.items.forEach(item=>{
-
-                const itemCategory =
-                    normalizeCategory(
-                        item.category
-                    );
-
-
-                if(
-                    currentCategory !== "All" &&
-                    itemCategory !== currentCategory
-                ){
-
-                    return;
-
-                }
-
-
-                const qty =
-                    Number(
-                        item.qty || 0
-                    );
-
-
-                const price =
-                    Number(
-                        item.price || 0
-                    );
-
-
-                const revenue =
-                    qty * price;
-
-
-                totalItems += qty;
-
-
-                if(currentCategory !== "All"){
-
-                    totalSales += revenue;
-
-                }
-
-
-                if(!itemSales[item.name]){
-
-                    itemSales[item.name] = {
-
-                        qty:0,
-
-                        revenue:0
-
-                    };
-
-                }
-
-
-                itemSales[item.name].qty
-                    += qty;
-
-
-                itemSales[item.name].revenue
-                    += revenue;
-
-            });
-
-        }
-
-
-        /*
-         * When a category is selected,
-         * payment breakdown is based on
-         * the selected category revenue.
-         */
-
-        if(currentCategory !== "All"){
-
-            let categoryTotal = 0;
-
-
-            if(Array.isArray(order.items)){
-
-                order.items.forEach(item=>{
-
-                    if(
-                        normalizeCategory(
-                            item.category
-                        ) === currentCategory
-                    ){
-
-                        categoryTotal +=
-                            Number(item.qty || 0) *
-                            Number(item.price || 0);
+                        totalItems +=
+                            Number(
+                                item.qty ||
+                                0
+                            );
 
                     }
+                );
 
-                });
-
-            }
-
-
-            if(order.payment_method === "Cash"){
-                cash += categoryTotal;
-            }
-
-            if(order.payment_method === "UPI"){
-                upi += categoryTotal;
-            }
-
-            if(order.payment_method === "Card"){
-                card += categoryTotal;
             }
 
         }
+    );
 
-    });
 
-
-    const average =
+    const averageBill =
         orders.length
-        ? totalSales / orders.length
+        ? totalSales /
+          orders.length
         : 0;
 
 
     document.getElementById(
-        "totalSales"
+        "liveTotalSales"
     ).textContent =
-        "₹"+formatMoney(
+        "₹" +
+        formatMoney(
             totalSales
         );
 
 
     document.getElementById(
-        "totalOrders"
+        "liveTotalOrders"
     ).textContent =
         orders.length;
 
 
     document.getElementById(
-        "totalItems"
+        "liveTotalItems"
     ).textContent =
         totalItems;
 
 
     document.getElementById(
-        "averageBill"
+        "liveAverageBill"
     ).textContent =
-        "₹"+formatMoney(
-            average
+        "₹" +
+        formatMoney(
+            averageBill
         );
 
 
     document.getElementById(
-        "cashSales"
+        "liveCash"
     ).textContent =
-        "₹"+formatMoney(
+        "₹" +
+        formatMoney(
             cash
         );
 
 
     document.getElementById(
-        "upiSales"
+        "liveUPI"
     ).textContent =
-        "₹"+formatMoney(
+        "₹" +
+        formatMoney(
             upi
         );
 
 
     document.getElementById(
-        "cardSales"
+        "liveCard"
     ).textContent =
-        "₹"+formatMoney(
+        "₹" +
+        formatMoney(
             card
         );
 
+}
 
-    displayItems(
-        itemSales
+
+
+/* =========================================
+   MONEY
+========================================= */
+
+function formatMoney(
+    number
+){
+
+    return Number(
+        number
+    )
+    .toFixed(2)
+    .replace(
+        /\.00$/,
+        ""
+    );
+
+}
+
+
+
+/* =========================================
+   AUTO REFRESH LIVE SALES
+========================================= */
+
+loadLiveSales();
+
+
+setInterval(
+    loadLiveSales,
+    30000
+);
+
+
+
+/* =========================================
+   VOICE
+========================================= */
+
+function openVoice(){
+
+    openPage(
+        "voicePage"
+    );
+
+}
+
+
+
+/* =========================================
+   SPEECH RECOGNITION
+========================================= */
+
+const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+let recognition = null;
+
+let listening = false;
+
+
+const voiceOrb =
+    document.getElementById(
+        "voiceOrb"
     );
 
 
-    displayOrders(
-        orders
+const voiceStatus =
+    document.getElementById(
+        "voiceStatus"
+    );
+
+
+const voiceHint =
+    document.getElementById(
+        "voiceHint"
+    );
+
+
+const voiceTranscript =
+    document.getElementById(
+        "voiceTranscript"
+    );
+
+
+if(SpeechRecognition){
+
+    recognition =
+        new SpeechRecognition();
+
+
+    recognition.lang =
+        "en-IN";
+
+
+    recognition.continuous =
+        false;
+
+
+    recognition.interimResults =
+        false;
+
+
+    recognition.onstart =
+        function(){
+
+            listening = true;
+
+
+            voiceOrb.classList.add(
+                "listening"
+            );
+
+
+            voiceStatus.textContent =
+                "Listening...";
+
+
+            voiceHint.textContent =
+                "Speak naturally";
+
+
+            voiceTranscript.textContent =
+                "Listening for your command...";
+
+        };
+
+
+    recognition.onresult =
+        async function(event){
+
+            const transcript =
+                event
+                    .results[0][0]
+                    .transcript;
+
+
+            voiceTranscript.textContent =
+                transcript;
+
+
+            voiceStatus.textContent =
+                "Thinking...";
+
+
+            voiceHint.textContent =
+                "Darky is processing your command";
+
+
+            voiceOrb.classList.remove(
+                "listening"
+            );
+
+
+            await sendVoiceMessage(
+                transcript
+            );
+
+        };
+
+
+    recognition.onerror =
+        function(event){
+
+            console.error(
+                "Speech recognition:",
+                event.error
+            );
+
+
+            listening = false;
+
+
+            voiceOrb.classList.remove(
+                "listening"
+            );
+
+
+            voiceStatus.textContent =
+                "Voice error";
+
+
+            voiceHint.textContent =
+                "Please try again";
+
+        };
+
+
+    recognition.onend =
+        function(){
+
+            listening = false;
+
+            voiceOrb.classList.remove(
+                "listening"
+            );
+
+        };
+
+}
+
+
+
+/* =========================================
+   START VOICE
+========================================= */
+
+function startVoiceCommand(){
+
+    if(!recognition){
+
+        voiceStatus.textContent =
+            "Voice not supported";
+
+
+        voiceHint.textContent =
+            "Please use Chrome or Edge";
+
+
+        return;
+
+    }
+
+
+    if(listening){
+
+        recognition.stop();
+
+        return;
+
+    }
+
+
+    try{
+
+        recognition.start();
+
+    }
+    catch(error){
+
+        console.error(
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =========================================
+   VOICE → AI
+========================================= */
+
+async function sendVoiceMessage(
+    message
+){
+
+    connectionStatus.textContent =
+        "● THINKING";
+
+
+    try{
+
+        const response =
+            await fetch(
+                SUPABASE_FUNCTION_URL,
+                {
+
+                    method:"POST",
+
+                    headers:{
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            SUPABASE_KEY
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            message:
+                                message
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Darky voice response:",
+            data
+        );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.error ||
+                "Voice request failed"
+            );
+
+        }
+
+
+        const answer =
+            data.reply ||
+            data.answer ||
+            "I couldn't process that command.";
+
+
+        voiceStatus.textContent =
+            "Darky";
+
+
+        voiceHint.textContent =
+            "Speaking...";
+
+
+        voiceTranscript.textContent =
+            "You: " +
+            message +
+            "\n\nDarky: " +
+            answer;
+
+
+        speakReply(
+            answer,
+            true
+        );
+
+
+        connectionStatus.textContent =
+            "● READY";
+
+
+        /*
+         * Also put the voice conversation
+         * into the Home chat history.
+         */
+
+        openPage(
+            "homePage"
+        );
+
+
+        addChatMessage(
+            "user",
+            message
+        );
+
+
+        addChatMessage(
+            "darky",
+            answer
+        );
+
+
+    }
+    catch(error){
+
+        console.error(
+            "Darky voice connection error:",
+            error
+        );
+
+
+        voiceStatus.textContent =
+            "Connection error";
+
+
+        voiceHint.textContent =
+            "Please try again";
+
+
+        connectionStatus.textContent =
+            "● CONNECTION ERROR";
+
+    }
+
+}
+
+
+
+/* =========================================
+   TEXT TO SPEECH
+========================================= */
+
+function speakReply(
+    text,
+    voiceMode = false
+){
+
+    if(
+        !("speechSynthesis" in window)
+    ){
+
+        return;
+
+    }
+
+
+    speechSynthesis.cancel();
+
+
+    const utterance =
+        new SpeechSynthesisUtterance(
+            text
+        );
+
+
+    utterance.lang =
+        "en-IN";
+
+
+    utterance.rate =
+        .92;
+
+
+    utterance.pitch =
+        1.08;
+
+
+    const voices =
+        speechSynthesis.getVoices();
+
+
+    const preferredVoice =
+        voices.find(
+            voice =>
+                /female|zira|samantha|aria|jenny|google uk english female/i
+                    .test(
+                        voice.name
+                    )
+        )
+
+        ||
+
+        voices.find(
+            voice =>
+                /^en-IN/i.test(
+                    voice.lang
+                )
+        )
+
+        ||
+
+        voices.find(
+            voice =>
+                /^en/i.test(
+                    voice.lang
+                )
+        );
+
+
+    if(preferredVoice){
+
+        utterance.voice =
+            preferredVoice;
+
+    }
+
+
+    if(voiceMode){
+
+        voiceOrb.classList.add(
+            "speaking"
+        );
+
+
+        voiceStatus.textContent =
+            "Darky is speaking";
+
+    }
+
+
+    utterance.onend =
+        function(){
+
+            voiceOrb.classList.remove(
+                "speaking"
+            );
+
+
+            if(voiceMode){
+
+                voiceStatus.textContent =
+                    "Ready to listen";
+
+
+                voiceHint.textContent =
+                    "Tap the microphone and speak";
+
+            }
+
+        };
+
+
+    speechSynthesis.speak(
+        utterance
     );
 
 }
 
 
-function displayItems(itemSales){
 
-    const tbody =
-        document.getElementById(
-            "itemTable"
-        );
+/* =========================================
+   VOICES LOADED
+========================================= */
 
+if(
+    "speechSynthesis" in window
+){
 
-    const names =
-        Object.keys(itemSales)
-        .sort(
-            (a,b)=>
-                itemSales[b].revenue
-                -
-                itemSales[a].revenue
-        );
+    speechSynthesis.onvoiceschanged =
+        function(){
 
+            speechSynthesis.getVoices();
 
-    if(names.length === 0){
-
-        tbody.innerHTML = `
-
-            <tr>
-
-                <td
-                colspan="3"
-                class="empty">
-
-                    No item sales
-
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-
-    tbody.innerHTML =
-        names.map(name=>{
-
-            const item =
-                itemSales[name];
-
-
-            return `
-
-                <tr>
-
-                    <td>
-                        ${escapeHtml(name)}
-                    </td>
-
-                    <td>
-                        ${item.qty}
-                    </td>
-
-                    <td>
-                        ₹${formatMoney(
-                            item.revenue
-                        )}
-                    </td>
-
-                </tr>
-
-            `;
-
-        }).join("");
+        };
 
 }
 
 
-function displayOrders(orders){
 
-    const tbody =
-        document.getElementById(
-            "orderTable"
-        );
+/* =========================================
+   GREETING
+========================================= */
 
-
-    if(orders.length === 0){
-
-        tbody.innerHTML = `
-
-            <tr>
-
-                <td
-                colspan="6"
-                class="empty">
-
-                    No orders found
-
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
+const hour =
+    new Date().getHours();
 
 
-    tbody.innerHTML =
-        orders.map(order=>{
-
-            const date =
-                new Date(
-                    order.created_at
-                )
-                .toLocaleString(
-                    "en-IN"
-                );
-
-
-            return `
-
-                <tr>
-
-                    <td>
-                        #${order.order_number}
-                    </td>
-
-                    <td>
-                        ${date}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            order.customer_name ||
-                            "Walk-in Customer"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            order.payment_method ||
-                            "-"
-                        )}
-                    </td>
-
-                    <td>
-                        ₹${formatMoney(
-                            Number(
-                                order.total || 0
-                            )
-                        )}
-                    </td>
-
-                    <td>
-
-                        <button
-                        class="delete-btn"
-                        onclick="deleteOrder(${order.id})">
-
-                            DELETE
-
-                        </button>
-
-                    </td>
-
-                </tr>
-
-            `;
-
-        }).join("");
-
-}
-    function formatMoney(number){
-
-    return Number(number)
-        .toFixed(2)
-        .replace(
-            /\.00$/,
-            ""
-        );
-
-}
-
-
-function showError(message){
-
-    const box =
-        document.getElementById(
-            "errorBox"
-        );
-
-    box.textContent =
-        "Error: " + message;
-
-    box.style.display =
-        "block";
-
-}
-
-
-function escapeHtml(text){
-
-    return String(text)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-/* ================================
-   DELETE ORDER
-================================ */
-
-async function deleteOrder(orderId){
-
-    const order =
-        allOrders.find(
-            item =>
-                Number(item.id) ===
-                Number(orderId)
-        );
-
-
-    if(!order){
-
-        showError(
-            "Order not found."
-        );
-
-        return;
-
-    }
-
-
-    const orderNumber =
-        order.order_number;
-
-
-    const customer =
-        order.customer_name ||
-        "Walk-in Customer";
-
-
-    const confirmed =
-        confirm(
-            "Delete Order #" +
-            orderNumber +
-            "?\n\n" +
-            "Customer: " +
-            customer +
-            "\n" +
-            "Amount: ₹" +
-            formatMoney(
-                Number(
-                    order.total || 0
-                )
-            ) +
-            "\n\n" +
-            "This cannot be undone."
-        );
-
-
-    if(!confirmed){
-        return;
-    }
-
+if(hour < 12){
 
     document.getElementById(
-        "errorBox"
-    ).style.display =
-        "none";
+        "greeting"
+    ).textContent =
+        "Good morning.";
 
+}
+else if(hour < 17){
 
-    /*
-     * Disable the clicked delete button
-     * while Supabase is processing.
-     */
+    document.getElementById(
+        "greeting"
+    ).textContent =
+        "Good afternoon.";
 
-    const buttons =
-        document.querySelectorAll(
-            ".delete-btn"
-        );
+}
+else{
 
-
-    buttons.forEach(button=>{
-
-        button.disabled = true;
-
-    });
-
-
-    const {
-        error
-    } =
-    await supabaseClient
-        .from("chaat_orders")
-        .delete()
-        .eq(
-            "id",
-            orderId
-        );
-
-
-    if(error){
-
-        console.error(error);
-
-        buttons.forEach(button=>{
-
-            button.disabled = false;
-
-        });
-
-
-        showError(
-            "Could not delete order: " +
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    /*
-     * Remove the order locally first.
-     * Then recalculate everything immediately.
-     */
-
-    allOrders =
-        allOrders.filter(
-            item =>
-                Number(item.id) !==
-                Number(orderId)
-        );
-
-
-    calculateSales(
-        getFilteredOrders()
-    );
+    document.getElementById(
+        "greeting"
+    ).textContent =
+        "Good evening.";
 
 }
 
 
-/* ================================
-   INITIAL LOAD
-================================ */
 
-setDefaultDates();
+/* =========================================
+   FIRST INTRODUCTION
+========================================= */
 
-updateFilterInfo();
+const introduction =
+"Hi, I'm Darky AI. You can call me Darky. I'm the AI assistant of Chaatarra, created by Iqbal.";
 
-loadSales();
+
+let hasIntroduced =
+    localStorage.getItem(
+        "darkyIntroduced"
+    );
+
+
+if(!hasIntroduced){
+
+    setTimeout(
+        function(){
+
+            addChatMessage(
+                "darky",
+                introduction
+            );
+
+
+            speakReply(
+                introduction
+            );
+
+
+            localStorage.setItem(
+                "darkyIntroduced",
+                "true"
+            );
+
+
+        },
+        1200
+    );
+
+}
+
 
 </script>
 
 </body>
-
 </html>
