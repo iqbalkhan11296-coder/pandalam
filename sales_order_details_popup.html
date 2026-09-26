@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Sales Tracking</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js?v=99"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#160005;
+    color:white;
+    font-family:Arial,sans-serif;
+}
+
+header{
+    background:#4b001f;
+    padding:20px;
+    text-align:center;
+    border-bottom:1px solid #d6a84f;
+}
+
+header h1{
+    margin:0;
+    color:#f5d27a;
+    font-family:Georgia,serif;
+    letter-spacing:3px;
+}
+
+header p{
+    margin:6px 0 0;
+    color:#d9bd78;
+    font-size:12px;
+    letter-spacing:2px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:18px;
+}
+
+.filters{
+    background:#29000e;
+    border:1px solid #9d7629;
+    border-radius:10px;
+    padding:14px;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr auto;
+    gap:10px;
+    margin-bottom:18px;
+}
+
+.filters label{
+    color:#d9bd78;
+    font-size:12px;
+    display:block;
+    margin-bottom:5px;
+}
+
+.filters input,
+.filters select{
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #8c6a2d;
+    background:white;
+    color:#222;
+}
+
+.load-btn{
+    align-self:end;
+    padding:10px 20px;
+    background:#d0a43d;
+    border:none;
+    border-radius:6px;
+    font-weight:bold;
+    color:#25000c;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(190px,1fr));
+    gap:12px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:linear-gradient(
+        145deg,
+        #310011,
+        #180006
+    );
+
+    border:1px solid #9d7629;
+    border-radius:12px;
+    padding:18px;
+}
+
+.card-title{
+    color:#c9ad70;
+    font-size:13px;
+}
+
+.card-value{
+    color:#f5d27a;
+    font-size:28px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.section-title{
+    color:#f5d27a;
+    font-family:Georgia,serif;
+    font-size:22px;
+    margin:25px 0 12px;
+}
+
+.panel{
+    background:#f8f4ea;
+    color:#222;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#4b001f;
+    color:#f5d27a;
+    padding:12px;
+    text-align:left;
+}
+
+td{
+    padding:11px;
+    border-bottom:1px solid #ddd;
+}
+
+.error{
+    background:#5b0015;
+    border:1px solid #ff7777;
+    padding:12px;
+    border-radius:7px;
+    display:none;
+    margin-bottom:15px;
+}
+
+.empty{
+    text-align:center;
+    padding:25px;
+    color:#777;
+}
+
+.delete-btn{
+    background:#8b0000;
+    color:white;
+    border:none;
+    border-radius:5px;
+    padding:7px 10px;
+    font-size:12px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.delete-btn:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+}
+
+.category-filter{
+    background:#29000e;
+    border:1px solid #9d7629;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:18px;
+}
+
+.category-filter-title{
+    color:#d9bd78;
+    font-size:12px;
+    margin-bottom:8px;
+}
+
+.category-buttons{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.category-btn{
+    flex:1;
+    min-width:90px;
+    padding:10px 14px;
+    border:1px solid #9d7629;
+    border-radius:6px;
+    background:#180006;
+    color:#f5d27a;
+    font-weight:bold;
+}
+
+.category-btn.active{
+    background:#d0a43d;
+    color:#25000c;
+}
+
+.filter-info{
+    color:#c9ad70;
+    font-size:12px;
+    margin-top:9px;
+}
+
+@media(max-width:750px){
+
+    .filters{
+        grid-template-columns:1fr;
+    }
+
+    .load-btn{
+        width:100%;
+    }
+
+    .category-btn{
+        min-width:70px;
+    }
+
+    .panel{
+        overflow-x:auto;
+    }
+
+    table{
+        min-width:760px;
+    }
+
+}
+
+
+/* ================================
+   ORDER DETAILS POPUP
+================================ */
+.order-number-btn{
+    background:none;
+    border:none;
+    padding:0;
+    color:#4b001f;
+    font-weight:bold;
+    cursor:pointer;
+    text-decoration:underline;
+    font-size:inherit;
+}
+.order-number-btn:hover{ color:#9d7629; }
+
+.order-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.65);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+}
+.order-modal-box{
+    width:min(430px,100%);
+    max-height:80vh;
+    overflow-y:auto;
+    background:#f8f4ea;
+    color:#222;
+    border:1px solid #d0a43d;
+    border-radius:12px;
+    box-shadow:0 12px 35px rgba(0,0,0,0.45);
+    padding:18px;
+}
+.order-modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    border-bottom:1px solid #ddd;
+    padding-bottom:10px;
+    margin-bottom:12px;
+}
+.order-modal-title{
+    color:#4b001f;
+    font-family:Georgia,serif;
+    font-size:20px;
+    font-weight:bold;
+}
+.order-modal-close{
+    background:#4b001f;
+    color:#f5d27a;
+    border:none;
+    border-radius:6px;
+    width:32px;
+    height:32px;
+    font-size:20px;
+    cursor:pointer;
+}
+.order-detail-row{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    padding:7px 0;
+    border-bottom:1px solid #e3e3e3;
+}
+.order-detail-label{
+    font-weight:bold;
+    color:#4b001f;
+}
+.order-items-title{
+    margin-top:15px;
+    margin-bottom:7px;
+    color:#4b001f;
+    font-weight:bold;
+}
+.order-item-row{
+    padding:8px 0;
+    border-bottom:1px solid #e3e3e3;
+}
+.order-item-name{ font-weight:bold; }
+.order-item-meta{
+    font-size:12px;
+    color:#666;
+    margin-top:3px;
+}
+.order-total-row{
+    display:flex;
+    justify-content:space-between;
+    margin-top:14px;
+    padding-top:12px;
+    border-top:2px solid #4b001f;
+    color:#4b001f;
+    font-size:18px;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>CHAATARRA</h1>
+
+<p>SALES TRACKING</p>
+
+</header>
+
+
+<div class="container">
+
+<div id="errorBox"
+class="error">
+</div>
+
+
+<div class="filters">
+
+<div>
+
+<label>FROM</label>
+
+<input
+type="date"
+id="fromDate">
+
+</div>
+
+
+<div>
+
+<label>TO</label>
+
+<input
+type="date"
+id="toDate">
+
+</div>
+
+
+<div>
+
+<label>CATEGORY</label>
+
+<select id="categoryFilter"
+onchange="applyCategoryFilter()">
+
+<option value="All">
+All Categories
+</option>
+
+<option value="Chaat">
+Chaat
+</option>
+
+<option value="Drinks">
+Drinks
+</option>
+
+<option value="Combos">
+Combos
+</option>
+
+</select>
+
+</div>
+
+
+<button
+class="load-btn"
+onclick="loadSales()">
+
+VIEW SALES
+
+</button>
+
+</div>
+
+
+<div class="category-filter">
+
+<div class="category-filter-title">
+FILTER SALES BY CATEGORY
+</div>
+
+<div class="category-buttons">
+
+<button
+class="category-btn active"
+data-category="All"
+onclick="selectCategory('All',this)">
+
+ALL
+
+</button>
+
+<button
+class="category-btn"
+data-category="Chaat"
+onclick="selectCategory('Chaat',this)">
+
+CHAAT
+
+</button>
+
+<button
+class="category-btn"
+data-category="Drinks"
+onclick="selectCategory('Drinks',this)">
+
+DRINKS
+
+</button>
+
+<button
+class="category-btn"
+data-category="Combos"
+onclick="selectCategory('Combos',this)">
+
+COMBOS
+
+</button>
+
+</div>
+
+<div
+id="filterInfo"
+class="filter-info">
+
+Showing all categories
+
+</div>
+
+</div>
+
+
+<div class="cards">
+
+<div class="card">
+
+<div class="card-title">
+TOTAL SALES
+</div>
+
+<div
+class="card-value"
+id="totalSales">
+
+₹0
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+TOTAL ORDERS
+</div>
+
+<div
+class="card-value"
+id="totalOrders">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+TOTAL ITEMS SOLD
+</div>
+
+<div
+class="card-value"
+id="totalItems">
+
+0
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+AVERAGE BILL
+</div>
+
+<div
+class="card-value"
+id="averageBill">
+
+₹0
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="section-title">
+PAYMENT BREAKDOWN
+</div>
+
+<div class="cards">
+
+<div class="card">
+
+<div class="card-title">
+CASH
+</div>
+
+<div class="card-value"
+id="cashSales">
+
+₹0
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+UPI
+</div>
+
+<div class="card-value"
+id="upiSales">
+
+₹0
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+CARD
+</div>
+
+<div class="card-value"
+id="cardSales">
+
+₹0
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="section-title">
+ITEM SALES
+</div>
+
+<div class="panel">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Item</th>
+
+<th>Quantity</th>
+
+<th>Revenue</th>
+
+</tr>
+
+</thead>
+
+<tbody id="itemTable">
+
+<tr>
+
+<td colspan="3"
+class="empty">
+
+Loading...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<div class="section-title">
+ORDERS
+</div>
+
+<div class="panel">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Order</th>
+
+<th>Date</th>
+
+<th>Customer</th>
+
+<th>Payment</th>
+
+<th>Total</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="orderTable">
+
+<tr>
+
+<td colspan="6"
+class="empty">
+
+Loading...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- ORDER DETAILS POPUP -->
+<div id="orderModal" class="order-modal" onclick="closeOrderModal(event)">
+    <div class="order-modal-box" onclick="event.stopPropagation()">
+        <div class="order-modal-header">
+            <div class="order-modal-title" id="orderModalTitle">
+                Order Details
+            </div>
+            <button class="order-modal-close" onclick="closeOrderModal()">×</button>
+        </div>
+        <div id="orderModalContent"></div>
+    </div>
+</div>
+
+<script>
+
+let allOrders = [];
+
+let currentCategory = "All";
+
+
+function localDateString(date){
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth()+1
+        ).padStart(2,"0");
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2,"0");
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+function setDefaultDates(){
+
+    const today =
+        new Date();
+
+    document.getElementById(
+        "fromDate"
+    ).value =
+        localDateString(today);
+
+    document.getElementById(
+        "toDate"
+    ).value =
+        localDateString(today);
+
+}
+
+
+function selectCategory(category, button){
+
+    currentCategory = category;
+
+    document.querySelectorAll(
+        ".category-btn"
+    ).forEach(btn=>{
+
+        btn.classList.remove(
+            "active"
+        );
+
+    });
+
+
+    button.classList.add(
+        "active"
+    );
+
+
+    document.getElementById(
+        "categoryFilter"
+    ).value = category;
+
+
+    updateFilterInfo();
+
+
+    if(allOrders.length){
+
+        calculateSales(
+            getFilteredOrders()
+        );
+
+    }
+
+}
+
+
+function applyCategoryFilter(){
+
+    const select =
+        document.getElementById(
+            "categoryFilter"
+        );
+
+    currentCategory =
+        select.value;
+
+
+    document.querySelectorAll(
+        ".category-btn"
+    ).forEach(btn=>{
+
+        btn.classList.toggle(
+            "active",
+            btn.dataset.category ===
+            currentCategory
+        );
+
+    });
+
+
+    updateFilterInfo();
+
+
+    if(allOrders.length){
+
+        calculateSales(
+            getFilteredOrders()
+        );
+
+    }
+
+}
+
+
+function updateFilterInfo(){
+
+    const info =
+        document.getElementById(
+            "filterInfo"
+        );
+
+
+    if(currentCategory === "All"){
+
+        info.textContent =
+            "Showing all categories";
+
+    }else{
+
+        info.textContent =
+            "Showing only " +
+            currentCategory +
+            " sales";
+
+    }
+
+}
+
+
+function orderHasCategory(order, category){
+
+    if(category === "All"){
+        return true;
+    }
+
+
+    if(!Array.isArray(order.items)){
+        return false;
+    }
+
+
+    return order.items.some(item=>{
+
+        return normalizeCategory(
+            item.category
+        ) === category;
+
+    });
+
+}
+
+
+function normalizeCategory(category){
+
+    const value =
+        String(
+            category || ""
+        ).trim().toLowerCase();
+
+
+    if(value === "chaat"){
+        return "Chaat";
+    }
+
+    if(value === "drinks"){
+        return "Drinks";
+    }
+
+    if(value === "combos"){
+        return "Combos";
+    }
+
+
+    return String(category || "").trim();
+
+}
+
+
+function getFilteredOrders(){
+
+    if(currentCategory === "All"){
+
+        return allOrders;
+
+    }
+
+
+    return allOrders.filter(order=>{
+
+        return orderHasCategory(
+            order,
+            currentCategory
+        );
+
+    });
+
+}
+
+
+async function loadSales(){
+
+    document.getElementById(
+        "errorBox"
+    ).style.display="none";
+
+
+    const from =
+        document.getElementById(
+            "fromDate"
+        ).value;
+
+
+    const to =
+        document.getElementById(
+            "toDate"
+        ).value;
+
+
+    if(!from || !to){
+
+        showError(
+            "Please select both dates."
+        );
+
+        return;
+
+    }
+
+
+    if(from > to){
+
+        showError(
+            "From date cannot be after To date."
+        );
+
+        return;
+
+    }
+
+
+    const start =
+        new Date(
+            from+"T00:00:00"
+        ).toISOString();
+
+
+    const endDate =
+        new Date(
+            to+"T00:00:00"
+        );
+
+
+    endDate.setDate(
+        endDate.getDate()+1
+    );
+
+
+    const end =
+        endDate.toISOString();
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("chaat_orders")
+        .select("*")
+        .gte(
+            "created_at",
+            start
+        )
+        .lt(
+            "created_at",
+            end
+        )
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        showError(
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    allOrders =
+        data || [];
+
+
+    calculateSales(
+        getFilteredOrders()
+    );
+
+}
+
+
+function calculateSales(orders){
+
+    let totalSales = 0;
+
+    let totalItems = 0;
+
+    let cash = 0;
+
+    let upi = 0;
+
+    let card = 0;
+
+
+    const itemSales = {};
+
+
+    orders.forEach(order=>{
+
+        const total =
+            Number(
+                order.total || 0
+            );
+
+
+        /*
+         * For ALL category:
+         * use the complete order total.
+         */
+
+        if(currentCategory === "All"){
+
+            totalSales += total;
+
+
+            if(order.payment_method === "Cash"){
+                cash += total;
+            }
+
+            if(order.payment_method === "UPI"){
+                upi += total;
+            }
+
+            if(order.payment_method === "Card"){
+                card += total;
+            }
+
+        }
+
+
+        /*
+         * For a specific category:
+         * calculate only the items belonging
+         * to that category.
+         */
+
+        if(Array.isArray(order.items)){
+
+            order.items.forEach(item=>{
+
+                const itemCategory =
+                    normalizeCategory(
+                        item.category
+                    );
+
+
+                if(
+                    currentCategory !== "All" &&
+                    itemCategory !== currentCategory
+                ){
+
+                    return;
+
+                }
+
+
+                const qty =
+                    Number(
+                        item.qty || 0
+                    );
+
+
+                const price =
+                    Number(
+                        item.price || 0
+                    );
+
+
+                const revenue =
+                    qty * price;
+
+
+                totalItems += qty;
+
+
+                if(currentCategory !== "All"){
+
+                    totalSales += revenue;
+
+                }
+
+
+                if(!itemSales[item.name]){
+
+                    itemSales[item.name] = {
+
+                        qty:0,
+
+                        revenue:0
+
+                    };
+
+                }
+
+
+                itemSales[item.name].qty
+                    += qty;
+
+
+                itemSales[item.name].revenue
+                    += revenue;
+
+            });
+
+        }
+
+
+        /*
+         * When a category is selected,
+         * payment breakdown is based on
+         * the selected category revenue.
+         */
+
+        if(currentCategory !== "All"){
+
+            let categoryTotal = 0;
+
+
+            if(Array.isArray(order.items)){
+
+                order.items.forEach(item=>{
+
+                    if(
+                        normalizeCategory(
+                            item.category
+                        ) === currentCategory
+                    ){
+
+                        categoryTotal +=
+                            Number(item.qty || 0) *
+                            Number(item.price || 0);
+
+                    }
+
+                });
+
+            }
+
+
+            if(order.payment_method === "Cash"){
+                cash += categoryTotal;
+            }
+
+            if(order.payment_method === "UPI"){
+                upi += categoryTotal;
+            }
+
+            if(order.payment_method === "Card"){
+                card += categoryTotal;
+            }
+
+        }
+
+    });
+
+
+    const average =
+        orders.length
+        ? totalSales / orders.length
+        : 0;
+
+
+    document.getElementById(
+        "totalSales"
+    ).textContent =
+        "₹"+formatMoney(
+            totalSales
+        );
+
+
+    document.getElementById(
+        "totalOrders"
+    ).textContent =
+        orders.length;
+
+
+    document.getElementById(
+        "totalItems"
+    ).textContent =
+        totalItems;
+
+
+    document.getElementById(
+        "averageBill"
+    ).textContent =
+        "₹"+formatMoney(
+            average
+        );
+
+
+    document.getElementById(
+        "cashSales"
+    ).textContent =
+        "₹"+formatMoney(
+            cash
+        );
+
+
+    document.getElementById(
+        "upiSales"
+    ).textContent =
+        "₹"+formatMoney(
+            upi
+        );
+
+
+    document.getElementById(
+        "cardSales"
+    ).textContent =
+        "₹"+formatMoney(
+            card
+        );
+
+
+    displayItems(
+        itemSales
+    );
+
+
+    displayOrders(
+        orders
+    );
+
+}
+
+
+function displayItems(itemSales){
+
+    const tbody =
+        document.getElementById(
+            "itemTable"
+        );
+
+
+    const names =
+        Object.keys(itemSales)
+        .sort(
+            (a,b)=>
+                itemSales[b].revenue
+                -
+                itemSales[a].revenue
+        );
+
+
+    if(names.length === 0){
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                colspan="3"
+                class="empty">
+
+                    No item sales
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        names.map(name=>{
+
+            const item =
+                itemSales[name];
+
+
+            return `
+
+                <tr>
+
+                    <td>
+                        ${escapeHtml(name)}
+                    </td>
+
+                    <td>
+                        ${item.qty}
+                    </td>
+
+                    <td>
+                        ₹${formatMoney(
+                            item.revenue
+                        )}
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+}
+
+
+function displayOrders(orders){
+
+    const tbody =
+        document.getElementById(
+            "orderTable"
+        );
+
+
+    if(orders.length === 0){
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                colspan="6"
+                class="empty">
+
+                    No orders found
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        orders.map(order=>{
+
+            const date =
+                new Date(
+                    order.created_at
+                )
+                .toLocaleString(
+                    "en-IN"
+                );
+
+
+            return `
+
+                <tr>
+
+                    <td>
+                        <button
+                            class="order-number-btn"
+                            onclick="showOrderDetails(${order.id})">
+                            #${escapeHtml(order.order_number)}
+                        </button>
+                    </td>
+
+                    <td>
+                        ${date}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            order.customer_name ||
+                            "Walk-in Customer"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            order.payment_method ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ₹${formatMoney(
+                            Number(
+                                order.total || 0
+                            )
+                        )}
+                    </td>
+
+                    <td>
+
+                        <button
+                        class="delete-btn"
+                        onclick="deleteOrder(${order.id})">
+
+                            DELETE
+
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+}
+
+function showOrderDetails(orderId){
+
+    const order = allOrders.find(
+        item => Number(item.id) === Number(orderId)
+    );
+
+    if(!order){
+        showError("Order not found.");
+        return;
+    }
+
+    const date = new Date(
+        order.created_at
+    ).toLocaleString("en-IN");
+
+    const customer =
+        order.customer_name ||
+        "Walk-in Customer";
+
+    const payment =
+        order.payment_method ||
+        "-";
+
+    let itemsHtml = "";
+
+    if(Array.isArray(order.items) && order.items.length){
+
+        itemsHtml = order.items.map(item=>{
+
+            const name =
+                escapeHtml(item.name || "Item");
+
+            const qty =
+                Number(item.qty || 0);
+
+            const price =
+                Number(item.price || 0);
+
+            const revenue =
+                qty * price;
+
+            const category =
+                escapeHtml(item.category || "");
+
+            return `
+                <div class="order-item-row">
+                    <div class="order-item-name">
+                        ${name}
+                    </div>
+                    <div class="order-item-meta">
+                        ${qty} × ₹${formatMoney(price)}
+                        ${category ? " • " + category : ""}
+                        = ₹${formatMoney(revenue)}
+                    </div>
+                </div>
+            `;
+
+        }).join("");
+
+    }else{
+
+        itemsHtml = `
+            <div class="order-item-row">
+                No item details available
+            </div>
+        `;
+
+    }
+
+    document.getElementById(
+        "orderModalTitle"
+    ).textContent =
+        "Order #" + order.order_number;
+
+    document.getElementById(
+        "orderModalContent"
+    ).innerHTML = `
+
+        <div class="order-detail-row">
+            <span class="order-detail-label">Date</span>
+            <span>${escapeHtml(date)}</span>
+        </div>
+
+        <div class="order-detail-row">
+            <span class="order-detail-label">Customer</span>
+            <span>${escapeHtml(customer)}</span>
+        </div>
+
+        <div class="order-detail-row">
+            <span class="order-detail-label">Payment</span>
+            <span>${escapeHtml(payment)}</span>
+        </div>
+
+        <div class="order-items-title">
+            ITEMS
+        </div>
+
+        ${itemsHtml}
+
+        <div class="order-total-row">
+            <span>TOTAL</span>
+            <span>
+                ₹${formatMoney(Number(order.total || 0))}
+            </span>
+        </div>
+    `;
+
+    document.getElementById(
+        "orderModal"
+    ).style.display = "flex";
+}
+
+
+function closeOrderModal(event){
+
+    if(
+        event &&
+        event.target &&
+        event.target.id !== "orderModal"
+    ){
+        return;
+    }
+
+    document.getElementById(
+        "orderModal"
+    ).style.display = "none";
+}
+
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key === "Escape"){
+            document.getElementById(
+                "orderModal"
+            ).style.display = "none";
+        }
+
+    }
+);
+
+
+    function formatMoney(number){
+
+    return Number(number)
+        .toFixed(2)
+        .replace(
+            /\.00$/,
+            ""
+        );
+
+}
+
+
+function showError(message){
+
+    const box =
+        document.getElementById(
+            "errorBox"
+        );
+
+    box.textContent =
+        "Error: " + message;
+
+    box.style.display =
+        "block";
+
+}
+
+
+function escapeHtml(text){
+
+    return String(text)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* ================================
+   DELETE ORDER
+================================ */
+
+async function deleteOrder(orderId){
+
+    const order =
+        allOrders.find(
+            item =>
+                Number(item.id) ===
+                Number(orderId)
+        );
+
+
+    if(!order){
+
+        showError(
+            "Order not found."
+        );
+
+        return;
+
+    }
+
+
+    const orderNumber =
+        order.order_number;
+
+
+    const customer =
+        order.customer_name ||
+        "Walk-in Customer";
+
+
+    const confirmed =
+        confirm(
+            "Delete Order #" +
+            orderNumber +
+            "?\n\n" +
+            "Customer: " +
+            customer +
+            "\n" +
+            "Amount: ₹" +
+            formatMoney(
+                Number(
+                    order.total || 0
+                )
+            ) +
+            "\n\n" +
+            "This cannot be undone."
+        );
+
+
+    if(!confirmed){
+        return;
+    }
+
+
+    document.getElementById(
+        "errorBox"
+    ).style.display =
+        "none";
+
+
+    /*
+     * Disable the clicked delete button
+     * while Supabase is processing.
+     */
+
+    const buttons =
+        document.querySelectorAll(
+            ".delete-btn"
+        );
+
+
+    buttons.forEach(button=>{
+
+        button.disabled = true;
+
+    });
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("chaat_orders")
+        .delete()
+        .eq(
+            "id",
+            orderId
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        buttons.forEach(button=>{
+
+            button.disabled = false;
+
+        });
+
+
+        showError(
+            "Could not delete order: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Remove the order locally first.
+     * Then recalculate everything immediately.
+     */
+
+    allOrders =
+        allOrders.filter(
+            item =>
+                Number(item.id) !==
+                Number(orderId)
+        );
+
+
+    calculateSales(
+        getFilteredOrders()
+    );
+
+}
+
+
+/* ================================
+   INITIAL LOAD
+================================ */
+
+setDefaultDates();
+
+updateFilterInfo();
+
+loadSales();
+
+</script>
+
+</body>
+
+</html>
