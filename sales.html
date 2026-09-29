@@ -20,6 +20,10 @@ content="width=device-width, initial-scale=1.0">
     box-sizing:border-box;
 }
 
+html{
+    zoom:70%;
+}
+
 body{
     margin:0;
     background:#160005;
@@ -266,7 +270,10 @@ td{
     text-decoration:underline;
     font-size:inherit;
 }
-.order-number-btn:hover{ color:#9d7629; }
+
+.order-number-btn:hover{
+    color:#9d7629;
+}
 
 .order-modal{
     display:none;
@@ -278,6 +285,7 @@ td{
     justify-content:center;
     padding:15px;
 }
+
 .order-modal-box{
     width:min(430px,100%);
     max-height:80vh;
@@ -289,6 +297,7 @@ td{
     box-shadow:0 12px 35px rgba(0,0,0,0.45);
     padding:18px;
 }
+
 .order-modal-header{
     display:flex;
     justify-content:space-between;
@@ -298,12 +307,14 @@ td{
     padding-bottom:10px;
     margin-bottom:12px;
 }
+
 .order-modal-title{
     color:#4b001f;
     font-family:Georgia,serif;
     font-size:20px;
     font-weight:bold;
 }
+
 .order-modal-close{
     background:#4b001f;
     color:#f5d27a;
@@ -314,6 +325,7 @@ td{
     font-size:20px;
     cursor:pointer;
 }
+
 .order-detail-row{
     display:flex;
     justify-content:space-between;
@@ -321,26 +333,34 @@ td{
     padding:7px 0;
     border-bottom:1px solid #e3e3e3;
 }
+
 .order-detail-label{
     font-weight:bold;
     color:#4b001f;
 }
+
 .order-items-title{
     margin-top:15px;
     margin-bottom:7px;
     color:#4b001f;
     font-weight:bold;
 }
+
 .order-item-row{
     padding:8px 0;
     border-bottom:1px solid #e3e3e3;
 }
-.order-item-name{ font-weight:bold; }
+
+.order-item-name{
+    font-weight:bold;
+}
+
 .order-item-meta{
     font-size:12px;
     color:#666;
     margin-top:3px;
 }
+
 .order-total-row{
     display:flex;
     justify-content:space-between;
@@ -713,18 +733,43 @@ Loading...
 
 </div>
 
+
 <!-- ORDER DETAILS POPUP -->
-<div id="orderModal" class="order-modal" onclick="closeOrderModal(event)">
-    <div class="order-modal-box" onclick="event.stopPropagation()">
-        <div class="order-modal-header">
-            <div class="order-modal-title" id="orderModalTitle">
-                Order Details
-            </div>
-            <button class="order-modal-close" onclick="closeOrderModal()">×</button>
-        </div>
-        <div id="orderModalContent"></div>
-    </div>
+
+<div id="orderModal"
+class="order-modal"
+onclick="closeOrderModal(event)">
+
+<div class="order-modal-box"
+onclick="event.stopPropagation()">
+
+<div class="order-modal-header">
+
+<div
+class="order-modal-title"
+id="orderModalTitle">
+
+Order Details
+
 </div>
+
+<button
+class="order-modal-close"
+onclick="closeOrderModal()">
+
+×
+
+</button>
+
+</div>
+
+<div id="orderModalContent">
+</div>
+
+</div>
+
+</div>
+
 
 <script>
 
@@ -1473,6 +1518,7 @@ function displayOrders(orders){
 
 }
 
+
 function showOrderDetails(orderId){
 
     const order = allOrders.find(
@@ -1616,7 +1662,7 @@ document.addEventListener(
 );
 
 
-    function formatMoney(number){
+function formatMoney(number){
 
     return Number(number)
         .toFixed(2)
