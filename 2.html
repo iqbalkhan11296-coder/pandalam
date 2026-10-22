@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5efdf">
+<meta name="description" content="Explore the Chaatarra and Blendarra menus — chaats, combos, momos, fries, fresh drinks and coffees.">
+<title>Arras | Chaatarra & Blendarra Menu</title>
+<style>
+:root{--cream:#f5efdf;--paper:#fffaf0;--ink:#171511;--gold:#9b7b42;--line:#d8c7a1}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:86px}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:Georgia,"Times New Roman",serif}
+header{padding:30px 18px 22px;text-align:center;border-bottom:1px solid var(--line);background:linear-gradient(135deg,#fffaf0,#eee2c8)}
+.eyebrow{font:11px/1.5 Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:#6d5937}
+.brand{font-size:clamp(38px,8vw,72px);font-weight:700;letter-spacing:.045em;margin:5px 0 0}
+.tagline{font:12px Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;margin-top:4px}
+.brand-divider{color:var(--gold);font-size:20px;margin:12px auto 0}
+.intro{max-width:720px;margin:0 auto;padding:24px 18px 8px;text-align:center}
+.intro h2{font-size:clamp(23px,4vw,34px);margin:0 0 8px}
+.intro p{font:14px/1.7 Arial,sans-serif;color:#61594b;margin:0}
+nav{position:sticky;top:0;z-index:5;background:rgba(255,250,240,.96);backdrop-filter:blur(10px);border-block:1px solid var(--line);padding:10px 12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+nav a{font:12px Arial,sans-serif;letter-spacing:.04em;text-decoration:none;color:var(--ink);border:1px solid #cbb88d;border-radius:99px;padding:9px 13px;white-space:nowrap}
+nav a:focus,nav a:hover{background:#211d16;color:#fff8e8}
+main{max-width:1100px;margin:auto;padding:10px 14px 42px}
+.menu-section{padding:22px 0 28px}
+.section-heading{display:flex;align-items:center;gap:12px;margin:0 auto 16px;max-width:850px}
+.section-heading span{height:1px;background:var(--gold);flex:1}
+.section-heading h2{font-size:clamp(17px,3vw,25px);font-weight:600;text-align:center;margin:0;white-space:normal}
+.menu-image-button{display:block;width:100%;max-width:820px;margin:0 auto;padding:0;border:1px solid #d8c7a1;background:#fffaf0;box-shadow:0 10px 28px #392b1514;cursor:zoom-in;position:relative;line-height:0}
+.menu-image-button img{display:block;width:100%;height:auto}
+.zoom-hint{position:absolute;right:10px;bottom:10px;line-height:1.2;padding:7px 10px;border-radius:20px;background:#171511cc;color:#fff8e8;font:11px Arial,sans-serif;opacity:0;transition:opacity .2s}
+.menu-image-button:hover .zoom-hint,.menu-image-button:focus-visible .zoom-hint{opacity:1}
+footer{text-align:center;border-top:1px solid var(--line);padding:24px 16px 30px;color:#6a5b42}
+footer strong{display:block;font-size:18px;letter-spacing:.14em;color:var(--ink)}
+footer p{font:11px/1.8 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;margin:8px 0 0}
+.viewer{position:fixed;inset:0;background:#090806f2;z-index:20;display:none;align-items:center;justify-content:center;padding:12px}
+.viewer.open{display:flex}
+.viewer img{max-width:100%;max-height:calc(100dvh - 24px);object-fit:contain}
+.close-viewer{position:absolute;top:12px;right:14px;width:42px;height:42px;border:1px solid #d7c7a3;border-radius:50%;background:#171511;color:#fff8e8;font-size:26px;cursor:pointer}
+@media(min-width:700px){main{padding-inline:28px}.menu-section{padding-block:30px}.menu-image-button{max-width:760px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Arras presents</div>
+  <h1 class="brand">ARRAS</h1>
+  <div class="tagline">Chaatarra · Blendarra · Smasharra</div>
+  <div class="brand-divider">✦ ───────── ✦</div>
+</header>
+<div class="intro">
+  <h2>Our Menu</h2>
+  <p>Explore our menu cards below. Each original menu image is shown as provided, so the item names, descriptions and prices stay exactly as they appear on your cards.</p>
+</div>
+<nav aria-label="Menu categories">
+  <a href="#chaats">Chaats</a>
+  <a href="#combos">Combo Offers</a>
+  <a href="#momos-fries">Momos & Fries</a>
+  <a href="#drinks">Fresh Drinks</a>
+  <a href="#coffee">Coffee</a>
+</nav>
+<main>
+
+      <section class="menu-section" id="chaats" aria-label="Chaatarra Chaats">
+        <div class="section-heading"><span></span><h2>Chaatarra Chaats</h2><span></span></div>
+        <button class="menu-image-button" type="button" aria-label="Open Chaatarra Chaats menu image" onclick="openViewer(this)">
+          <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAYABAADASIAAhEBAxEB/8QAHgAAAAYDAQEAAAAAAAAAAAAAAAECAwYHBAUICQr/xAB0EAABAwMDAgQDAwYGCQkSBBcBAgMRAAQFBhIhBzETIkFRCGFxFDKBCRUjQpGhFlJiscHRFyQzcoLS0/HwJUNTkrKztMPUGCYnNERjZGVzdYOTlKKjpMLxNTZFRlV0hIWVxONWZnaWpSg3OFRXhrXi5EcZ/8QAGwEBAAMBAQEBAAAAAAAAAAAAAAECAwQFBgf/xAA5EQACAgEDAwEGBgICAgMAAgMAAQIRAwQhMRJBUWEFEyJxkfAygaGxwdEU4ULxBiMVM1IkNENicv/aAAwDAQACEQMRAD8A4mZQGEkJ5nkzSLt1DT8g7kETPuDTarjw0FU8ER9aaWXbtICU7tv6ornNRkqPiFJPmB5NIcPjHakU+tkoT5l7FjylBSdxHv7U08spWpLadqQIJJ5P1q4EsJ8Mccye/tWey8yncXipQSJ2pHc+1YLfmQUg7FDt7H5Ut0KSwhR4ClEd/aqshD7zqbsqUknxR+r6H6UhT6lJAHEd/nWN4hBJCf39jTWcWrdvPn28GO/yqCR+3aD6juO0AbiZ7Vm27gLF0wU+VSdyT/FIP9Va+3UAPOdsng/P2raNVJxAFzu/TKSQ0nvtn9c/vj58+lAPXFq3grK2vnyh+8Uslu0IkMlPILvzmCEew59jGX7ty6uXXn3St1xRWpauSVGZP41mPrW6240FK2le8hRmTHc/OtetKlENpTKiePf6US8hsU2kOBRg7o8vyrIaYUtYSeB94k+g96zLXErZb33Cg2fRtJlR/qrJt30sOocVIUskwiOEJ7Dn0J/mpZFC3bZdyhpxlJQwgbApflT+J9/pTvh29sSFfpVATuUDt9eye5HzNZRuk3iVFTBWv0WtwqUn+ismx0/l8rPgtbLeOXlpCUx/fHv+FR8yTTuXzj0oSA2gdkIED93JNKtsLcLJeeSrw+8qO2fxPpVm4Doxf34ZuE+IGz/1Q8Ay16/d3eZQ+gqycV0ZwmC23Gau21qPIVcK79+yfvH91Uc0uCyiymsJj7nKNhiyaWrb2atGdwT3+8s9/qanmL6a5u6YhDDDDhHmcdUXljvzAhIqx7O9xdF6xi9P4e4yl46rYww23tCjz2QOSPmrgetXloLpBkrl1q6zrjKlpMqtbaDbWx/iz/rzg+XkT67jxVK2y6SOfNLdAWXnrY527fvbm5M2uNtQFXFz35SnslHu4qAK6j6c9CcPpdp3uby1thcMqDrNlb8sWyxMGTy64P46uP4oFWRh9J4nCF5+xsG27l/+7XK+XHj6b1nk/Tt8q2qmkpA8qUuH+J7fX2qN+5I06VupQGjuG2VKilssnw1FS0hQPI78U+/z4wSd53DiB60pDQbSsAEqAiO376Axypt1UBtQA4lRgn8KQtHmV4bZP49qzQ2pbZC0grHqDTictUlaW1rSVJ2pUAZ+dAXR918xOxgvO885mN293cZPN3a6P1f7XbT251d5c5Mv2T+X/ADiR81yufc0c6K6J6u1rp62t9H6C1Hqe2snbdtX7jH2zy2uW9+yVK0o7JJ9TT2F2d+D740eB99e3wH8E6Z419s9o6q+P7m6r+032T3z+zZ237P+z8P+2q86J9B1p4bK+MDRP7839m73ePuf73l8ncfc7f2bfV+Kqe98MPxN43D3mUuujmuo7TC27l5dXH7Mh7yNJ4LhQlBUoD0AJPvW50V8NvxP6+wFvjuimv8AM4y6S8ubtcbh7hpt5C20uNKUtKAlSVJBUFAgiiQ46q6M0nmdV6rvelul8Ljc7bZu9ucl22S2y+2tt0/pHSkp3eWUpG4lJBSn3qgdM9NOqmptTYq4xOhNX29tZ5K2ubm9vMdcm2tGmnkrfdffKPCQlAUe578c1aGvugWpvhR6C+IbZ62yVrnMpm8fcZzC524fTfXFzZqZk/pHOFFy6t58oK1qUrypCgqQDUe+HbofrfTHTPVN/p/V9p1I1Pq7A2WHweBstO5e9Uu7vXbVp5y4vHl+C205dPKJWoqISggJAE0yR0j0JzOpH8Wq2YV4Wk9G3efuQ88i3s8fbvPuq2iVqCUArPgJUo7QewJ+VavB9MNY5Z7G5W00vmWcNc5a5xVvcN2rmxy7d4tuT8v+YcfSke5H3qov4Qvga1x0WznTvJdY7i0u9XZvS1xhmbJq/aYnEpeadTffZ68uHnHSts+A2pKEhJ7knbVp6K6C/GToTQmC0rjOjOgmcbhLVm0uLt/VOV8W5cI5dflT9qASpa3D27fKgJz0v6YdVcT080BhdQ9MtVOZPFYjF2t9bWuPyTrdtcNstoW1cvvOtoSEvBIKipG0hSSoAmofrT4KeqtJ/C30i0x9kcvlNZ6L1e7mL270xh3b4O22QtXLu5Zt0tKddUeCo8JA5UTyeKnvw8dI+t1t8OehWgdQ6fymmM7h7J2zvGslZrssXh7x91wLff2eS54Tqkq/V8v8xNdf+J6ca2wXS2wxeUwn51zvD5q1v8p+Xm39/xUeA2x6f9o8wL8QpWn1qGg3sN6eRzOudH4rJ4e9Tf2uTs27y0vG0lCbltaAUrCVACQUn0IB71m0A6lRzXJnwX/AA86t0F1L693/WXSnTjCWuUyWVuMe5a2qW7vGzL13cOIfZuEpS2/teQlS1+aUtO3vVtdbPDV1m1L+UP0HrbFafyuQ0HjNKXltmcozlLS7TbXKt0FhVzeuLtuoG5aSh0pW5k87uYolp36NnL6f68z+SxeEw91lMrl7WzxVu8+i1tm1uPvOOKCUoQlIJJJIH0qZfFp1c1T0l6R4vWWnMXa31w29cYy6u7b+6t7G3Z2Puv8/qBCShZHoCsE+tVb+Ul0d6gZzprpTUejdM5LVc/SefXl7jHYVlF3eXNq8w0y44wwr9Iooc8pCUklP1+Qyv8AF5qDpj0u0Vp/R/THX2r7/NXeXw13Z2jVjfdv4y0u1vN37wW64r+cQ2hKiCpwgBIAqZovR3O0B1Oyuu7/W2Lz2A0rj89gMliXWbQW4x13dMuWuRbcZStTyFrUpCilZ2+VI3BKnFTZpH4qul/VfVNjpjTeUz053M20y6xmuqUj+8iY5H89A5j4gviX1N0+68dKNK6Yw2K1NjtVXNxbZTDvG4dvm1LtlIt2V+YtPqLri+4Wj9DuoK+ILqlrTpfofpLqBpTHW+pdSajy2KwuPYukqYtL3IW7b9y8toHbuQyy4rbuT7pB4qEdXuhusviI+JHR2r7bQeU0VpmwyCcnZaz1FaO2NxfOtJtzaNW7T4C8ghK1qUrw9g2q3A8UqfFP8KusutXUDp3rLp3Z6cvNQaQxT9m4xnkHlO2V60wW0s7W17cIWvcpY4CUkkhQFFUaH4KuoOsNafEfojN9TtL4vTepNNaK/L+RxaL5u7urW+tL+0tVqfeZbSlxaHHXE793nLSlcK3GvV8VynpL4VPH+I7rTrDqHprP6H0rpq3zV3lsUu7uLmxvs3frW264laUq8JC3XHAhWwJ3J4q8Nf4zXmU0HmbTR0fI3WbFk8zi7M5Fm3bXdk2T93vcfBSEbwoEbgkg+nNU6O2a4J65a11vj7jTOC0NpbD5/L5/IWqXJ+78a7tLVh5bTrLg8RS0+KwpC9vBSVA7q23xR65w+kdDa2udb/mjQ2ntI3WPs8hk8hZKu8ddXzCg20u1S0lSgqRtBWhIIPfiof8PHS3qV6U32q87qPR1hfs6w1ZfdLg8TkrVl27yNw5fP4pZ2N7nEtNocQoBRG7v3rJ6/6Jz118POtdNaT0F+Z8tlc/gckmxtrq3s8hdWNpc2ry1B99aE+I5sVylsH32pk0b7C0n2nOmf8m36uL/7tM/mZf7P/aH4f4j/AK34v7H/AK/hfbcf4v8AmqvL1r8SWUwvXnSuiunWqX8NgtR5JGDlO0aZvsQ49eMpbFw8U7A3vbWnwpCgrglR2r+e8L0S6uaj/K7aR1Vf6TzOidGaXvcS87Zt+Gu/u7NOHt7e5vUpZSVJde8QpB+6lY3ck19b+uulNQ5jr90kzmKwn2vE4fO3dxk7v8Ahb3bZ59m0WhXhLcS46kqQohKFJIHJPANV6C9Xh6b6KxGjsjmMpj77MXuWu1N3WVyu8vXy400ltTjjiSUpT90AIACQAPevPHH/APN0n/tI/wDeivQt5T7LyW3EpWhaSpKkqBSoEcgj2Ncj9H+kmuNX6A6gZ7G4r7Zj9GaxzF/kJXNxb2zFqhFvbdpLi07nlBxlSUJBPBHrU9jWb/8AXRjqLhuj1jqDpm3r65v9b32Wz+Tysvkt3zD7FpaP/dbe2Z2trS2Wwt3w1A/vJPPbW6c+KfVuY1Xqjovq9pWw0r1BwGAXlJbK0ufGtef3jU+y4tKglKkhPllfKlCfl3qC63+E7qz1v+E+715jL3CYbpFpvN2bGHyuL8TJ5PFSy4443crbSjyrfytz6A6tqR3G4l2X4qfhe0Hn+l/UPM6O0xbr6o31hcXOeu7a5urh7NXVzZXDS1upddWl5KlKQApSFAkCBIoDafB1rtfUv4bfZ2s7nMrwubyGDt8hcO737y3t9wK3e5UpCkgknuea3uq/jD6nQ+pNV2ukvheveouiNMXj9jfc9+b0Wyry3bWvwhjD7alJCkqCgpX1Uny+tcf6w/Kn4rq907wvRfRXRGY1t1Qz2Us7LH4G8QxaXFrctPIuYtqg4tLwdaS4lTZSkAr3BSRXRnxT9XNf8AVHpnY9Kfgb6i9JteZTMWuMv8hm9R2+Ot8fZK3eI8tq3uFPIWlSFoQoBKk8j61WnQx6k+K2L0VjOnLPU3SfS3SjNOqWw6j03rK1+8d1fW14pC/Z7u0dKltJ8qAhtJCUr3bQo7pfpJ1k6b6N13pXq7pjVeuNLaf8AO0NlpTNvQ/qLBygqU6yLgpbW8l4pQltK1JCEghI7VUPwxfDTr/pH1p1jqPVeB+z4P8u2zGNyf6ez/aX2UWVlbeI8lFw6hLiyW0lSVrTz681tPjN6G696g9VukOqNHYM5jTWg8m1f3WV+2W9v9rKri0fS1tffSpSy3tAQkqPzFVp27Qv9wR8OHwn06V9IdG2vTHXmd1zpvPqav8hkuokb/AO0Y26+yWza0ONKdaDaF7SklK9qSsqKjV9dQOiOmdW9OdWaK0ZptnT+dz9neY5tVvYJsshcC9aW0pC207nQkkpBUkgT3rzh+E3rD1C+E3qVndJ9RtKXOndBv5VFnlsbnLy3uLWy8Rw+Fd2z9u882ttS9q1pWpKhwAkpJPrNnrm2z+Uxd9icvYW2Xw+Rt3LW8sLxtLrVxbuJ2rbcSggpUCCCCOCKo6Y0U9+T309e6f8Awk9M2N1ZXODzWUjI39xZXaEtOtPuuq3tqCVLBBbKDyR2rk7qT8e2V0h8S9poXWeM0bY9N2b1hfZzUjF1lPzpi7K5aW0oNNv8APNOpT7kEpUvkg+vS7X+h9a/DlrnqPqe/6fS6s6V13fY3N5JzC5VtrO4e1tdW0vW1vepWgJcKVvKSlspWd+0lKTxYnXj4D9Odc9M6WzWv9M2OvtQZPKWZz+LvtSXVrbXNteuNPIbt2U3DbbLSTtShSUpMJAJkVEvjL0dO9Xei+suiF2LPU+mb/HXbbaFPI/SraQpXhghSlAUqQkEkEe9U7+U/6v6e078P+pOkXcjYQvVGTx+Px9i06lTz7VvdNruHlpB8qElXlJPhlX3T2NchdAvh01P+UcyN7rPrXqm8yHQyxdL1ph7fI2j6cldt/ft9ndK7W1s+7KElXjLCt21G7Y033vB/4W9P8AU747tH5bqbqXF/ZXSWUuGbVvGvM2Ldy84/YWzTq3vE8QoBUl0JKUlKk7VEE1j06H2R+TX6f3Wlvg9w1rmbF+wvru/yVw008AhT0Z+U2v+8B/GtiP8A7q9O3l5Xj3yqfTmq46O5XQnSHpbpXQeJybNjgdI2NthcZ7dlO1T7bYQhClJCfGdcXvXzIJUSe5q0Vd6g9B86luzdKk+u1Cofp5p7T51hmdQvZH+0GocnkuLzT9m+XmrcOpcbb270uD80Xf3V79hA3cRVo0iL38oUeT86Pjv7UQU889+9EAfWvK4L4/T/n/AJ6zH++W3/1R6t/0/wA/4KzH++W3/wBURXpYf31/T+rB4X/wWf6tK69o0uQe9LJA/eKAkEn2
