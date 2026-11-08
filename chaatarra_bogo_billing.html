@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHAATARRA | Buy 1 Get 1 Billing</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js?v=1"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#160005;color:#fff;font-family:Arial,sans-serif;padding-bottom:24px}
+header{background:#4b001f;padding:18px;text-align:center;border-bottom:1px solid #d6a84f}
+header h1{margin:0;color:#f5d27a;font-family:Georgia,serif;letter-spacing:3px}
+header p{margin:5px 0 0;color:#d9bd78;font-size:11px;letter-spacing:2px}
+.offer-strip{max-width:1200px;margin:14px auto 0;padding:12px 16px;text-align:center;color:#4b001f;background:linear-gradient(100deg,#f5d27a,#fff0bf,#f5d27a);font-weight:900;letter-spacing:1px;border-radius:9px}
+.container{max-width:1200px;margin:auto;padding:15px}
+.categories{display:flex;gap:8px;overflow-x:auto;margin-bottom:15px}
+.category-btn{flex:1;min-width:100px;padding:15px;border:1px solid #9d7629;background:#29000e;color:#f5d27a;border-radius:8px;font-weight:bold;cursor:pointer}
+.category-btn.active{background:#f5d27a;color:#4b001f}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.product{background:linear-gradient(145deg,#310011,#180006);border:1px solid #76551d;border-radius:12px;padding:15px;min-height:155px}
+.product-name{font-weight:bold;min-height:40px;font-size:17px;line-height:1.25}
+.product-price{color:#f5d27a;font-size:18px;margin:8px 0;font-weight:800}
+.bogo-tag{display:inline-block;background:#f5d27a;color:#4b001f;padding:4px 8px;border-radius:5px;font-size:10px;font-weight:900;letter-spacing:.7px;margin:2px 0 8px}
+.product.unavailable{opacity:.65;border-color:#777}
+.unavailable-badge{display:inline-block;background:#8b0000;color:white;padding:5px 8px;border-radius:5px;font-size:11px;font-weight:bold;margin:4px 0 8px}
+.add-btn{width:100%;min-height:44px;border:0;background:#f5d27a;color:#4b001f;padding:10px 16px;border-radius:9px;font-weight:900;font-size:14px;cursor:pointer;touch-action:manipulation}
+.empty{text-align:center;padding:40px 10px;color:#c9ad70;grid-column:1/-1}
+.cart{position:fixed;left:50%;bottom:14px;transform:translate(-50%,calc(100% + 30px));width:min(680px,calc(100% - 24px));max-height:min(82vh,700px);overflow:hidden;z-index:1000;background:rgba(248,244,234,.98);color:#222;border-radius:22px;border:1px solid rgba(245,210,122,.65);box-shadow:0 18px 60px rgba(0,0,0,.48);opacity:0;transition:transform .4s cubic-bezier(.16,1.15,.3,1),opacity .2s}
+.cart.cart-visible{transform:translate(-50%,0);opacity:1}
+.cart-drawer-head{min-height:72px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;background:linear-gradient(135deg,#fff,#f6edd3);border-bottom:1px solid rgba(75,0,31,.12)}
+.cart-icon{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:15px;background:#4b001f;color:#f5d27a;font-size:22px}
+.cart-head-info{min-width:0;flex:1}
+.cart-head-title{display:flex;align-items:center;gap:8px;font-weight:900;color:#4b001f;font-size:15px}
+.cart-count{display:inline-grid;place-items:center;min-width:23px;height:23px;padding:0 7px;border-radius:99px;background:#f5d27a;color:#4b001f;font-size:13px}
+.cart-preview{margin-top:3px;color:#786a55;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cart-head-total{text-align:right;color:#4b001f;font-size:19px;font-weight:900;white-space:nowrap}
+.cart-chevron{color:#4b001f;font-size:18px;transition:transform .25s}
+.cart.expanded .cart-chevron{transform:rotate(180deg)}
+.cart-body{max-height:0;overflow-y:auto;transition:max-height .35s}
+.cart.expanded .cart-body{max-height:calc(min(82vh,700px) - 72px)}
+.cart-inner{padding:14px}
+.cart-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #e6dfd1;background:#fffdf8;border-radius:12px;padding:11px;margin-bottom:8px}
+.cart-item small{display:block;color:#756b5b;margin-top:3px}
+.qty{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.qty button{width:30px;height:30px;border:0;background:#4b001f;color:#f5d27a;border-radius:6px;font-weight:bold}
+.remove{border:0;background:#8b0000!important;color:white!important}
+.customer{margin-top:12px}
+.customer input{width:100%;padding:11px;margin-bottom:8px;border:1px solid #aaa;border-radius:6px;font-size:14px}
+.payment{display:flex;gap:8px;margin-top:8px}
+.payment button{flex:1;padding:11px;border:1px solid #777;background:white;border-radius:6px;font-weight:bold}
+.payment button.selected{background:#4b001f;color:#f5d27a;border-color:#4b001f}
+.price-summary{margin-top:14px;padding:11px;background:#fffdf8;border:1px solid #e6dfd1;border-radius:10px;color:#4b001f}
+.summary-row{display:flex;justify-content:space-between;margin:5px 0;font-size:14px}
+.summary-row.discount{color:#14733d;font-weight:bold}
+.total{display:flex;justify-content:space-between;font-size:22px;font-weight:bold;color:#4b001f;margin-top:10px;padding-top:9px;border-top:1px dashed #9c8d72}
+.actions{display:flex;gap:8px;margin-top:14px}
+.actions button{flex:1;min-width:0;height:46px;padding:10px 8px;border:0;border-radius:7px;font-weight:bold;font-size:13px}
+.clear{background:#777;color:white}.bill{background:#4b001f;color:#f5d27a}.right{background:#4b001f;color:#f5d27a;cursor:pointer}
+.receipt-print{display:none}
+.receipt-center{text-align:center}
+.receipt-total{font-size:18px;font-weight:bold}
+.receipt-item{display:block;margin:5px 0;line-height:1.35}
+.receipt-item-name{font-weight:bold;overflow-wrap:anywhere}
+.receipt-item-detail{display:flex;justify-content:space-between;gap:5px}
+.receipt-muted{font-size:11px}
+@media(max-width:600px){
+ .products{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .product{padding:13px;min-height:160px}
+ .product-name{font-size:16px}
+ .product-price{font-size:16px}
+ .add-btn{min-height:44px}
+ .cart{bottom:10px;width:calc(100% - 16px);border-radius:19px;max-height:84vh}
+ .cart-drawer-head{min-height:68px;padding:10px 11px}
+ .cart-icon{width:42px;height:42px;flex-basis:42px}
+ .cart-head-total{font-size:17px}
+ .cart.expanded .cart-body{max-height:calc(84vh - 68px)}
+ .offer-strip{margin:12px 10px 0;font-size:13px}
+}
+@media print{
+ @page{size:58mm auto;margin:0}
+ html,body{width:58mm!important;margin:0!important;padding:0!important;background:#fff!important;color:#000!important}
+ body>*:not(#receipt){display:none!important}
+ #receipt{display:block!important;width:58mm;padding:3mm;font-family:monospace;font-size:13px;color:#000;background:#fff}
+ #receipt hr{border:0;border-top:1px dashed #000;margin:7px 0}
+ .receipt-total{font-size:18px;font-weight:bold}
+}
+</style>
+</head>
+<body>
+<header><h1>CHAATARRA</h1><p>THE HOUSE OF CHAATS</p></header>
+<div class="offer-strip">BUY 1 GET 1 FREE · SAME ITEM · LIMITED-TIME OFFER</div>
+<div class="container">
+ <div class="categories" id="categories"></div>
+ <div id="products" class="products"><div class="empty">Loading BOGO products...</div></div>
+</div>
+<div class="cart" id="cartDrawer">
+ <div class="cart-drawer-head" onclick="toggleCartDrawer()">
+  <div class="cart-icon">🛒</div>
+  <div class="cart-head-info"><div class="cart-head-title"><span>YOUR ORDER</span><span class="cart-count" id="cartCount">0</span></div><div class="cart-preview" id="cartPreview">Add items to start an order</div></div>
+  <div class="cart-head-total" id="cartHeadTotal">₹0</div><div class="cart-chevron">⌃</div>
+ </div>
+ <div class="cart-body"><div class="cart-inner">
+  <div id="cartItems"><div class="empty">Cart is empty</div></div>
+  <div class="customer">
+   <input id="customerName" type="text" placeholder="Customer Name">
+   <input id="tableNumber" type="text" placeholder="Table / Token Number">
+   <input id="phone" type="tel" placeholder="Phone Number">
+   <input id="notes" type="text" placeholder="Special Instructions">
+  </div>
+  <div class="payment">
+   <button id="cashBtn" onclick="selectPayment('Cash')">CASH</button>
+   <button id="upiBtn" onclick="selectPayment('UPI')">UPI</button>
+   <button id="cardBtn" onclick="selectPayment('Card')">CARD</button>
+  </div>
+  <div class="price-summary">
+   <div class="summary-row"><span>Offer subtotal</span><strong id="subtotal">₹0</strong></div>
+   <div class="summary-row discount"><span>BOGO discount</span><strong id="discount">−₹0</strong></div>
+   <div class="total"><span>TOTAL</span><span id="total">₹0</span></div>
+  </div>
+  <div class="actions">
+   <button class="clear" onclick="clearCart()">CLEAR</button>
+   <button class="bill" onclick="billAndPrint()">BILL &amp; PRINT</button>
+   <button class="right" onclick="window.location.href='https://iqbalkhan11296-coder.github.io/pandalam/upi.html'">QR</button>
+  </div>
+ </div></div>
+</div>
+<div id="receipt" class="receipt-print">
+ <div class="receipt-center"><strong>CHAATARRA</strong><br>THE HOUSE OF CHAATS<br><strong>BUY 1 GET 1 OFFER</strong></div>
+ <hr>
+ <div>Order No: <span id="receiptOrder"></span></div>
+ <div>Date: <span id="receiptDate"></span></div>
+ <div>Customer: <span id="receiptCustomer"></span></div>
+ <div>Table/Token: <span id="receiptTable"></span></div>
+ <div id="receiptPhoneRow">Phone: <span id="receiptPhone"></span></div>
+ <hr>
+ <div id="receiptItems"></div>
+ <hr>
+ <div class="receipt-item-detail"><span>Subtotal:</span><span>₹<span id="receiptSubtotal">0</span></span></div>
+ <div class="receipt-item-detail"><span>BOGO Discount:</span><span>−₹<span id="receiptDiscount">0</span></span></div>
+ <div class="receipt-total receipt-item-detail"><span>TOTAL:</span><span>₹<span id="receiptTotal">0</span></span></div>
+ <div>Payment: <span id="receiptPayment"></span></div>
+ <div id="receiptNotes" style="margin-top:7px"></div>
+ <br><div class="receipt-center">Thank You!<br>Visit Again</div>
+</div>
+<script>
+"use strict";
+let allProducts=[];
+let currentCategory="All";
+let cart=[];
+let selectedPayment="Cash";
+let bogoClient=null;
+let cartDrawerExpanded=false;
+
+function escapeHtml(value){return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function getClient(){
+ if(typeof supabaseClient !== "undefined")return supabaseClient;
+ if(window.supabaseClient)return window.supabaseClient;
+ if(window.supabase&&typeof window.supabase.from==="function")return window.supabase;
+ if(window.supabase&&window.supabase.createClient&&window.SUPABASE_URL&&window.SUPABASE_ANON_KEY){
+  return window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
+ }
+ return null;
+}
+function showMessage(message){document.getElementById("products").innerHTML=`<div class="empty">${escapeHtml(message)}</div>`;}
+async function loadProducts(){
+ const box=document.getElementById("products");
+ const client=getClient();
+ if(!client){showMessage("Supabase client not found. Check that supabase.js loads and exposes supabaseClient.");return;}
+ bogoClient=client;
+ box.innerHTML='<div class="empty">Loading BOGO products...</div>';
+ const {data,error}=await supabaseClient.from("bogo_products").select("*").order("name",{ascending:true});
+ if(error){console.error(error);showMessage("Unable to load BOGO products: "+error.message);return;}
+ allProducts=data||[];
+ renderCategories();
+ showCategory(currentCategory);
+}
+function subscribeToBogoProductUpdates(){
+ if(!bogoClient)return;
+ bogoClient.channel("bogo-products-live")
+  .on("postgres_changes",{event:"*",schema:"public",table:"bogo_products"},()=>loadProducts())
+  .subscribe();
+}
+function renderCategories(){
+ const names=["All",...new Set(allProducts.map(p=>p.category||"Other"))];
+ document.getElementById("categories").innerHTML=names.map(name=>`<button class="category-btn ${name===currentCategory?"active":""}" onclick="showCategory('${escapeHtml(name).replace(/'/g,"&#039;")}')">${escapeHtml(name.toUpperCase())}</button>`).join("");
+}
+function showCategory(category){
+ currentCategory=category;
+ document.querySelectorAll(".category-btn").forEach(b=>b.classList.toggle("active",b.textContent.trim().toLowerCase()===category.toLowerCase()));
+ const products=allProducts.filter(p=>category==="All"||(p.category||"Other").toLowerCase()===category.toLowerCase());
+ const box=document.getElementById("products");
+ if(!products.length){box.innerHTML='<div class="empty">No products in this category.</div>';return;}
+ box.innerHTML=products.map(p=>{
+  const available=p.available!==false;
+  return `<div class="product ${available?"":"unavailable"}"><div class="product-name">${escapeHtml(p.name)}</div><div class="bogo-tag">BUY 1 GET 1 FREE</div>${available?"":'<div class="unavailable-badge">UNAVAILABLE</div>'}<div class="product-price">₹${Number(p.price).toFixed(0)}</div><button class="add-btn" ${available?`onclick="addToCart(${Number(p.id)})"`:"disabled"}>${available?"ADD":"UNAVAILABLE"}</button></div>`;
+ }).join("");
+}
+function getLine(item){
+ const freeQty=Math.floor(item.qty/2);
+ const paidQty=item.qty-freeQty;
+ return {freeQty,paidQty,subtotal:item.price*item.qty,discount:item.price*freeQty,total:item.price*paidQty};
+}
+function getSummary(){
+ return cart.reduce((s,item)=>{const x=getLine(item);s.subtotal+=x.subtotal;s.discount+=x.discount;s.total+=x.total;return s;},{subtotal:0,discount:0,total:0});
+}
+function addToCart(id){
+ const p=allProducts.find(x=>Number(x.id)===Number(id));
+ if(!p||p.available===false)return;
+ const existing=cart.find(x=>Number(x.id)===Number(p.id));
+ if(existing)existing.qty++;
+ else cart.push({id:p.id,name:p.name,price:Number(p.price),category:p.category||"Other",qty:1});
+ renderCart();showCartBarOnly();
+}
+function toggleCartDrawer(){
+ if(!cart.length)return;
+ cartDrawerExpanded=!cartDrawerExpanded;
+ document.getElementById("cartDrawer").classList.toggle("expanded",cartDrawerExpanded);
+}
+function showCartBarOnly(){
+ const d=document.getElementById("cartDrawer");d.classList.add("cart-visible");d.classList.remove("expanded");cartDrawerExpanded=false;
+}
+function hideCartDrawer(){const d=document.getElementById("cartDrawer");d.classList.remove("cart-visible","expanded");cartDrawerExpanded=false;}
+function updateCartHeader(){
+ const count=cart.reduce((s,x)=>s+x.qty,0),sum=getSummary();
+ document.getElementById("cartCount").textContent=count;
+ document.getElementById("cartHeadTotal").textContent="₹"+sum.total.toFixed(0);
+ document.getElementById("cartPreview").textContent=cart.length?cart.map(x=>`${x.name} ×${x.qty}`).join(" • "):"Add items to start an order";
+}
+function renderCart(){
+ const box=document.getElementById("cartItems");
+ if(!cart.length){box.innerHTML='<div class="empty">Cart is empty</div>';hideCartDrawer();}
+ else box.innerHTML=cart.map((item,i)=>{
+  const x=getLine(item);
+  return `<div class="cart-item"><div><strong>${escapeHtml(item.name)}</strong><small>₹${item.price.toFixed(0)} each · ${x.paidQty} paid + ${x.freeQty} free</small><strong>₹${x.total.toFixed(0)}</strong></div><div class="qty"><button onclick="changeQty(${i},-1)">−</button><span>${item.qty}</span><button onclick="changeQty(${i},1)">+</button><button class="remove" onclick="removeItem(${i})">×</button></div></div>`;
+ }).join("");
+ const s=getSummary();
+ document.getElementById("subtotal").textContent="₹"+s.subtotal.toFixed(0);
+ document.getElementById("discount").textContent="−₹"+s.discount.toFixed(0);
+ document.getElementById("total").textContent="₹"+s.total.toFixed(0);
+ updateCartHeader();
+}
+function changeQty(i,n){if(!cart[i])return;cart[i].qty+=n;if(cart[i].qty<=0)cart.splice(i,1);renderCart();if(cart.length)showCartBarOnly();}
+function removeItem(i){cart.splice(i,1);renderCart();}
+function selectPayment(method){
+ selectedPayment=method;
+ ["Cash","UPI","Card"].forEach(x=>document.getElementById(x.toLowerCase()+"Btn").classList.toggle("selected",x===method));
+}
+function clearCart(ask=true){
+ if(!cart.length)return;
+ if(ask&&!confirm("Clear the current order?"))return;
+ cart=[];renderCart();
+ ["customerName","tableNumber","phone","notes"].forEach(id=>document.getElementById(id).value="");
+ selectPayment("Cash");
+}
+function prepareReceipt(order){
+ document.getElementById("receiptOrder").textContent=order.orderNumber;
+ document.getElementById("receiptDate").textContent=new Date().toLocaleString();
+ document.getElementById("receiptCustomer").textContent=order.customerName;
+ document.getElementById("receiptTable").textContent=order.tableNumber||"-";
+ document.getElementById("receiptPhoneRow").style.display=order.phone?"block":"none";
+ document.getElementById("receiptPhone").textContent=order.phone||"";
+ document.getElementById("receiptItems").innerHTML=order.items.map(item=>{
+  const free=Math.floor(item.qty/2),paid=item.qty-free,lineTotal=paid*item.price;
+  return `<div class="receipt-item"><div class="receipt-item-name">${escapeHtml(item.name)}</div><div class="receipt-item-detail"><span>₹${item.price.toFixed(0)} × ${item.qty}</span><span>₹${(item.price*item.qty).toFixed(0)}</span></div><div class="receipt-muted">Paid: ${paid} · Free: ${free}</div></div>`;
+ }).join("");
+ document.getElementById("receiptSubtotal").textContent=order.subtotal.toFixed(0);
+ document.getElementById("receiptDiscount").textContent=order.discount.toFixed(0);
+ document.getElementById("receiptTotal").textContent=order.total.toFixed(0);
+ document.getElementById("receiptPayment").textContent=order.payment;
+ document.getElementById("receiptNotes").innerHTML=order.notes?`<strong>Note:</strong> ${escapeHtml(order.notes)}`:"";
+}
+async function billAndPrint(){
+ if(!cart.length){alert("Please add items to the order.");return;}
+ if(!bogoClient)bogoClient=getClient();
+ if(!bogoClient){alert("Supabase client is not available. Check supabase.js.");return;}
+ const button=document.querySelector(".bill");
+ button.disabled=true;button.textContent="SAVING...";
+ try{
+  const customerName=document.getElementById("customerName").value.trim()||"Walk-in Customer";
+  const tableNumber=document.getElementById("tableNumber").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const notes=document.getElementById("notes").value.trim();
+  const s=getSummary();
+  const orderItems=cart.map(item=>{const x=getLine(item);return {id:item.id,name:item.name,category:item.category,price:item.price,qty:item.qty,paid_qty:x.paidQty,free_qty:x.freeQty,subtotal:x.subtotal,discount:x.discount,total:x.total};});
+  const payload={customer_name:customerName,table_number:tableNumber,phone,notes,items:orderItems,subtotal:s.subtotal,discount:s.discount,total:s.total,payment_method:selectedPayment,status:"Pending"};
+  const {data:orderNumber,error:numberError}=await bogoClient.rpc("next_bogo_order_number");
+  if(numberError)throw numberError;
+  payload.order_number=orderNumber;
+  const {error}=await bogoClient.from("bogo_orders").insert([payload]);
+  if(error)throw error;
+  prepareReceipt({orderNumber,customerName,tableNumber,phone,notes,items:cart.map(x=>({...x})),subtotal:s.subtotal,discount:s.discount,total:s.total,payment:selectedPayment});
+  setTimeout(()=>window.print(),250);
+  clearCart(false);
+ }catch(error){console.error(error);alert("Order could not be saved.\n\n"+(error.message||String(error)));}
+ finally{button.disabled=false;button.textContent="BILL & PRINT";}
+}
+window.addEventListener("afterprint",()=>{});
+document.addEventListener("DOMContentLoaded",()=>{selectPayment("Cash");renderCart();loadProducts().then(subscribeToBogoProductUpdates);});
+</script>
+</body>
+</html>
