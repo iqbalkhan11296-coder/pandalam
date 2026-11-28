@@ -1,0 +1,821 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chaatarra | Billing</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js?v=1"></script>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#160005;color:white;font-family:Arial,sans-serif;padding-bottom:24px}
+header{position:relative;background:#4b001f;padding:18px;text-align:center;border-bottom:1px solid #d6a84f}
+header h1{margin:0;color:#f5d27a;font-family:Georgia,serif;letter-spacing:3px}
+header p{margin:5px 0 0;color:#d9bd78;font-size:11px;letter-spacing:2px}
+.container{max-width:1200px;margin:auto;padding:15px}
+.categories{display:flex;gap:8px;overflow-x:auto;margin-bottom:15px}
+.category-btn{flex:1;min-width:100px;padding:15px;border:1px solid #9d7629;background:#29000e;color:#f5d27a;border-radius:8px;font-weight:bold;cursor:pointer}
+.category-btn.active{background:#f5d27a;color:#4b001f}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.product{background:linear-gradient(145deg,#310011,#180006);border:1px solid #76551d;border-radius:12px;padding:15px;min-height:155px}
+.product-name{font-weight:bold;min-height:35px;font-size:16px;line-height:1.2}
+.product-price{color:#f5d27a;font-size:17px;font-weight:800;margin:8px 0}
+.product.unavailable{opacity:.72;border-color:#777}
+.unavailable-badge{display:inline-block;background:#8b0000;color:white;padding:5px 8px;border-radius:5px;font-size:11px;font-weight:bold;margin:4px 0 8px}
+.add-btn{width:100%;min-height:44px;border:none;background:#f5d27a;color:#4b001f;padding:10px 14px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.empty{text-align:center;padding:30px 10px;color:#c9ad70}
+.cart{position:fixed;left:50%;bottom:14px;transform:translate(-50%,calc(100% + 30px));width:min(680px,calc(100% - 24px));max-height:min(78vh,680px);overflow:hidden;z-index:1000;background:rgba(248,244,234,.98);color:#222;border-radius:22px;padding:0;border:1px solid rgba(245,210,122,.65);box-shadow:0 18px 60px #0007;opacity:0;transition:transform .35s ease,opacity .25s ease}
+.cart.cart-visible{transform:translate(-50%,0);opacity:1}
+.cart-drawer-head{min-height:72px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;background:linear-gradient(135deg,#fff,#f6edd3);border-bottom:1px solid #eee}
+.cart-icon{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:15px;background:#4b001f;color:#f5d27a;font-size:22px}
+.cart-head-info{min-width:0;flex:1}
+.cart-head-title{display:flex;align-items:center;gap:8px;font-weight:900;color:#4b001f;font-size:15px}
+.cart-count{display:inline-grid;place-items:center;min-width:23px;height:23px;padding:0 7px;border-radius:99px;background:#f5d27a;color:#4b001f;font-size:13px;font-weight:900}
+.cart-preview{margin-top:3px;color:#786a55;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cart-head-total{text-align:right;color:#4b001f;font-size:19px;font-weight:900;white-space:nowrap}
+.cart-chevron{color:#4b001f;font-size:18px;transition:transform .2s}
+.cart.expanded .cart-chevron{transform:rotate(180deg)}
+.cart-body{max-height:0;overflow-y:auto;overflow-x:hidden;transition:max-height .3s ease}
+.cart.expanded .cart-body{max-height:calc(min(78vh,680px) - 72px)}
+.cart-inner{padding:14px}
+.cart-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #e6dfd1;background:#fffdf8;border-radius:13px;padding:12px;margin-bottom:8px}
+.qty{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.qty button{width:30px;height:30px;border:none;background:#4b001f;color:#f5d27a;border-radius:6px;font-weight:bold}
+.remove{border:none;background:#8b0000;color:white;padding:6px 9px;border-radius:5px}
+.customer{margin-top:10px;padding-top:4px}
+.customer input{width:100%;padding:11px;margin-bottom:8px;border:1px solid #aaa;border-radius:6px;font-size:15px}
+.payment{display:flex;gap:8px;margin-top:8px}
+.payment button{flex:1;padding:11px;border:1px solid #777;background:white;border-radius:6px;font-weight:bold}
+.payment button.selected{background:#4b001f;color:#f5d27a;border-color:#4b001f}
+.total{display:flex;justify-content:space-between;font-size:22px;font-weight:bold;color:#4b001f;margin-top:15px}
+.actions{display:flex;gap:7px;margin-top:15px}
+.actions button{flex:1;min-width:0;min-height:44px;padding:8px 5px;border:none;border-radius:7px;font-weight:bold;font-size:12px;cursor:pointer}
+.clear{background:#777;color:white}
+.bill{background:#4b001f;color:#f5d27a}
+.right{background:#4b001f;color:#f5d27a}
+.hold-order-btn{background:#f5d27a;color:#4b001f;border:1px solid #9d7629!important}
+.back-btn{position:absolute;left:12px;top:50%;transform:translateY(-50%);min-height:40px;padding:8px 12px;background:transparent;color:#f5d27a;border:1px solid #9d7629;border-radius:9px;font-weight:bold;font-size:13px;cursor:pointer}
+.table-badge{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#f5d27a;color:#4b001f;padding:7px 12px;border-radius:99px;font-weight:900;font-size:13px}
+.screen-title{margin:4px 0 14px;color:#f5d27a;font-family:Georgia,serif;font-size:20px;letter-spacing:1px;font-weight:normal}
+.tables-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+.table-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:112px;padding:12px 8px;border:1px solid #76551d;border-radius:14px;background:linear-gradient(145deg,#310011,#180006);color:#f5d27a;cursor:pointer;touch-action:manipulation;font-family:inherit}
+.table-tile .tile-label{font-size:12px;color:#d9bd78}
+.table-tile .tile-num{font-family:Georgia,serif;font-size:34px;font-weight:bold;line-height:1}
+.table-tile .tile-status{font-size:12px;color:#b89a5a}
+.table-tile.occupied{background:#f5d27a;border-color:#f5d27a;color:#4b001f}
+.table-tile.occupied .tile-label,.table-tile.occupied .tile-status{color:#4b001f;font-weight:bold}
+.table-tile.line-tile{grid-column:1/-1;min-height:84px;flex-direction:row;gap:14px;border-style:dashed;border-color:#d6a84f}
+.table-tile.line-tile .tile-num{font-size:24px;letter-spacing:2px}
+.line-modal{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.65)}
+.line-card{width:min(420px,100%);max-height:80vh;overflow-y:auto;padding:16px;background:#fffdf8;color:#4b001f;border:1px solid #d6a84f;border-radius:16px}
+.line-card h3{margin:0 0 12px;font-family:Georgia,serif}
+.line-row{display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:8px;padding:13px;background:#f5d27a;color:#4b001f;border:none;border-radius:10px;font-weight:bold;font-size:14px;cursor:pointer}
+.line-new{width:100%;min-height:46px;margin-bottom:8px;background:#4b001f;color:#f5d27a;border:none;border-radius:10px;font-weight:900;cursor:pointer}
+.line-close{width:100%;min-height:42px;background:#777;color:white;border:none;border-radius:10px;font-weight:bold;cursor:pointer}
+[hidden]{display:none!important}
+.receipt-print{display:none}
+.receipt-center{text-align:center}
+.receipt-total{font-size:18px;font-weight:bold}
+@media(max-width:600px){
+ .products{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .product{padding:13px}
+ .cart{bottom:10px;width:calc(100% - 16px);border-radius:19px;max-height:82vh}
+ .cart-drawer-head{min-height:68px;padding:10px 11px}
+ .cart-icon{width:42px;height:42px;flex-basis:42px}
+ .cart-head-total{font-size:17px}
+ .cart.expanded .cart-body{max-height:calc(82vh - 68px)}
+ .actions{gap:5px}
+ .actions button{font-size:11px;padding:8px 3px}
+ .product-name{font-size:15px}
+}
+@media print{
+ body{background:white;color:black;padding:0;margin:0}
+ body>*:not(#receipt){display:none!important}
+ #receipt{display:block!important;width:58mm;padding:3mm;font-family:monospace;font-size:13px;color:#000;background:#fff}
+ #receipt hr{border:0;border-top:1px dashed #000;margin:7px 0}
+}
+</style>
+</head>
+
+<body>
+<header>
+    <button id="backBtn" class="back-btn" type="button" onclick="leaveTable()" hidden>‹ Tables</button>
+    <span id="tableBadge" class="table-badge" hidden></span>
+    <h1>CHAATARRA</h1>
+    <p>THE HOUSE OF CHAATS</p>
+</header>
+
+<!-- TABLE SELECTION -->
+<div class="container" id="tablesScreen">
+    <h2 class="screen-title">Select a table</h2>
+    <div id="tablesGrid" class="tables-grid"></div>
+</div>
+
+<!-- BILLING -->
+<div class="container" id="billingScreen" hidden>
+    <div class="categories">
+        <button class="category-btn active" onclick="showCategory('Chaat',this)">CHAAT</button>
+        <button class="category-btn" onclick="showCategory('Drinks',this)">DRINKS</button>
+        <button class="category-btn" onclick="showCategory('Combos',this)">COMBOS</button>
+    </div>
+
+    <div id="products" class="products">
+        <div class="empty">Loading products...</div>
+    </div>
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart" id="cartDrawer">
+    <div class="cart-drawer-head" id="cartDrawerHead"
+         onclick="toggleCartDrawer()" role="button" tabindex="0"
+         aria-label="Expand or collapse cart">
+        <div class="cart-icon">🛒</div>
+        <div class="cart-head-info">
+            <div class="cart-head-title">
+                <span>YOUR ORDER</span>
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
+            <div class="cart-preview" id="cartPreview">Add items to start an order</div>
+        </div>
+        <div class="cart-head-total" id="cartHeadTotal">₹0</div>
+        <div class="cart-chevron">⌃</div>
+    </div>
+
+    <div class="cart-body">
+        <div class="cart-inner">
+            <div id="cartItems"><div class="empty">Cart is empty</div></div>
+
+            <div class="customer">
+                <input id="customerName" type="text" placeholder="Customer Name">
+                <input id="tableNumber" type="text" placeholder="Table / Token Number" readonly>
+                <input id="phone" type="tel" placeholder="Phone Number">
+                <input id="notes" type="text" placeholder="Special Instructions">
+            </div>
+
+            <div class="payment">
+                <button id="cashBtn" onclick="selectPayment('Cash')">CASH</button>
+                <button id="upiBtn" onclick="selectPayment('UPI')">UPI</button>
+                <button id="cardBtn" onclick="selectPayment('Card')">CARD</button>
+            </div>
+
+            <div class="total">
+                <span>TOTAL</span>
+                <span id="total">₹0</span>
+            </div>
+
+            <div class="actions">
+                <button class="clear" onclick="clearCart()">CLEAR</button>
+                <button class="hold-order-btn" onclick="holdCurrentOrder()">⏸ HOLD</button>
+                <button class="bill" onclick="billAndPrint()">BILL &amp; PRINT</button>
+                <button class="right" onclick="window.location.href='https://iqbalkhan11296-coder.github.io/pandalam/upi.html'">QR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- IN LINE (TAKEAWAY) PANEL -->
+<div id="linePanel" class="line-modal" hidden>
+    <div class="line-card">
+        <h3>In Line orders</h3>
+        <div id="lineList"></div>
+        <button class="line-new" type="button" onclick="newLineToken()">+ New token</button>
+        <button class="line-close" type="button" onclick="closeLinePanel()">Close</button>
+    </div>
+</div>
+
+<!-- PRINT RECEIPT -->
+<div id="receipt" class="receipt-print">
+    <div class="receipt-center">
+        <strong>CHAATARRA</strong><br>
+        THE HOUSE OF CHAATS
+    </div>
+    <hr>
+    <div>Order No: <span id="receiptOrder"></span></div>
+    <div>Date: <span id="receiptDate"></span></div>
+    <div>Customer: <span id="receiptCustomer"></span></div>
+    <div>Table/Token: <span id="receiptTable"></span></div>
+    <div id="receiptPhoneRow">Phone: <span id="receiptPhone"></span></div>
+    <hr>
+    <div id="receiptItems"></div>
+    <hr>
+    <div class="receipt-total">TOTAL: ₹<span id="receiptTotal">0</span></div>
+    <div>Payment: <span id="receiptPayment"></span></div>
+    <br>
+    <div class="receipt-center">Thank You!<br>Visit Again</div>
+</div>
+
+<script>
+"use strict";
+
+let allProducts = [];
+let currentCategory = "Chaat";
+let cart = [];
+let selectedPayment = "Cash";
+let currentOrderNumber = null;
+let cartDrawerExpanded = false;
+
+/* TABLE ORDERS: ONE RUNNING ORDER PER TABLE / TOKEN, SAVED IN THIS BROWSER */
+const TABLE_ORDERS_KEY = "chaatarra_table_orders_v2";
+const TABLE_COUNT = 10;
+let activeKey = null;
+let activeLabel = "";
+
+/* SAFE HTML */
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+/* PRODUCT LOADING */
+async function loadProducts() {
+    const productsBox = document.getElementById("products");
+    productsBox.innerHTML = '<div class="empty">Loading products...</div>';
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("chaat_products")
+            .select("*")
+            .order("name", { ascending: true });
+
+        if (error) throw error;
+
+        allProducts = data || [];
+        const activeButton = document.querySelector(".category-btn.active");
+        showCategory(currentCategory, activeButton);
+    } catch (error) {
+        console.error(error);
+        productsBox.innerHTML =
+            `<div class="empty">Unable to load products.<br><br>${escapeHtml(error.message)}</div>`;
+    }
+}
+
+function subscribeToProductUpdates() {
+    supabaseClient
+        .channel("chaat-products-live")
+        .on("postgres_changes", {
+            event: "*",
+            schema: "public",
+            table: "chaat_products"
+        }, () => loadProducts())
+        .subscribe(status => console.log("Product realtime status:", status));
+}
+
+/* CATEGORY DISPLAY */
+function showCategory(category, button) {
+    currentCategory = category;
+
+    document.querySelectorAll(".category-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
+    if (button) button.classList.add("active");
+
+    const productsBox = document.getElementById("products");
+    const products = allProducts.filter(product =>
+        String(product.category).toLowerCase() === category.toLowerCase()
+    );
+
+    if (!products.length) {
+        productsBox.innerHTML =
+            `<div class="empty">No products in ${escapeHtml(category)}.</div>`;
+        return;
+    }
+
+    productsBox.innerHTML = products.map(product => {
+        const available = product.available !== false;
+
+        return `
+            <div class="product ${available ? "" : "unavailable"}">
+                <div class="product-name">${escapeHtml(product.name)}</div>
+                ${available ? "" : '<div class="unavailable-badge">UNAVAILABLE</div>'}
+                <div class="product-price">₹${Number(product.price).toFixed(0)}</div>
+                ${available
+                    ? `<button class="add-btn" onclick="addToCart(${Number(product.id)})">ADD</button>`
+                    : '<button class="add-btn" disabled style="background:#555;color:#ddd">UNAVAILABLE</button>'
+                }
+            </div>`;
+    }).join("");
+}
+
+/* CART DRAWER */
+function toggleCartDrawer(force) {
+    const drawer = document.getElementById("cartDrawer");
+    if (!drawer || cart.length === 0) return;
+
+    cartDrawerExpanded = typeof force === "boolean"
+        ? force
+        : !cartDrawerExpanded;
+
+    drawer.classList.toggle("expanded", cartDrawerExpanded);
+}
+
+function showCartBarOnly() {
+    const drawer = document.getElementById("cartDrawer");
+    if (!drawer) return;
+
+    drawer.classList.add("cart-visible");
+    drawer.classList.remove("expanded");
+    cartDrawerExpanded = false;
+}
+
+function showCartDrawer() {
+    const drawer = document.getElementById("cartDrawer");
+    if (!drawer) return;
+
+    drawer.classList.add("cart-visible", "expanded");
+    cartDrawerExpanded = true;
+}
+
+function hideCartDrawer() {
+    const drawer = document.getElementById("cartDrawer");
+    if (!drawer) return;
+
+    drawer.classList.remove("expanded", "cart-visible");
+    cartDrawerExpanded = false;
+}
+
+document.getElementById("cartDrawerHead").addEventListener("keydown", function(e) {
+    if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleCartDrawer();
+    }
+});
+
+function updateCartHeader() {
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+
+    document.getElementById("cartCount").textContent = count;
+    document.getElementById("cartHeadTotal").textContent = "₹" + getTotal().toFixed(0);
+
+    document.getElementById("cartPreview").textContent = cart.length
+        ? cart.map(item => item.qty > 1
+            ? `${item.name} ×${item.qty}`
+            : item.name
+        ).join(" • ")
+        : "Add items to start an order";
+}
+
+/* ADD ITEMS */
+function addToCart(productId) {
+    const product = allProducts.find(p => Number(p.id) === Number(productId));
+    if (!product) return;
+
+    if (product.available === false) {
+        alert("This item is currently unavailable.");
+        return;
+    }
+
+    const existing = cart.find(item => Number(item.id) === Number(product.id));
+
+    if (existing) {
+        existing.qty++;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            price: Number(product.price),
+            category: product.category,
+            qty: 1
+        });
+    }
+
+    renderCart();
+    showCartBarOnly();
+}
+
+/* RENDER CART */
+function renderCart() {
+    const cartBox = document.getElementById("cartItems");
+
+    if (!cart.length) {
+        cartBox.innerHTML = '<div class="empty">Cart is empty</div>';
+        document.getElementById("total").textContent = "₹0";
+        updateCartHeader();
+        hideCartDrawer();
+        return;
+    }
+
+    cartBox.innerHTML = cart.map((item, index) => `
+        <div class="cart-item">
+            <div>
+                <strong>${escapeHtml(item.name)}</strong><br>
+                ₹${Number(item.price).toFixed(0)} × ${item.qty}<br>
+                <strong>₹${(item.price * item.qty).toFixed(0)}</strong>
+            </div>
+            <div class="qty">
+                <button onclick="changeQty(${index},-1)">−</button>
+                <span>${item.qty}</span>
+                <button onclick="changeQty(${index},1)">+</button>
+                <button class="remove" onclick="removeItem(${index})">×</button>
+            </div>
+        </div>
+    `).join("");
+
+    updateCartHeader();
+    updateTotal();
+}
+
+function changeQty(index, change) {
+    if (!cart[index]) return;
+
+    cart[index].qty += change;
+    if (cart[index].qty <= 0) cart.splice(index, 1);
+
+    renderCart();
+    if (cart.length) showCartBarOnly();
+}
+
+function removeItem(index) {
+    cart.splice(index, 1);
+    renderCart();
+    if (cart.length) showCartBarOnly();
+}
+
+function getTotal() {
+    return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+}
+
+function updateTotal() {
+    document.getElementById("total").textContent = "₹" + getTotal().toFixed(0);
+}
+
+/* PAYMENT */
+function selectPayment(method) {
+    selectedPayment = method;
+
+    document.querySelectorAll(".payment button").forEach(button => {
+        button.classList.remove("selected");
+    });
+
+    const ids = { Cash: "cashBtn", UPI: "upiBtn", Card: "cardBtn" };
+    document.getElementById(ids[method]).classList.add("selected");
+}
+
+/* TABLE ORDER STORAGE */
+function readTableOrders() {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(TABLE_ORDERS_KEY) || "{}");
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    } catch (error) {
+        console.error("Could not read table orders:", error);
+        return {};
+    }
+}
+
+function writeTableOrders(orders) {
+    try {
+        localStorage.setItem(TABLE_ORDERS_KEY, JSON.stringify(orders));
+        return true;
+    } catch (error) {
+        console.error("Could not save table orders:", error);
+        alert("Could not save this order in browser storage. The cart has not been cleared.");
+        return false;
+    }
+}
+
+/* Saves the cart under the active table, or frees the table if the cart is empty */
+function saveActiveOrder() {
+    if (!activeKey) return true;
+    const orders = readTableOrders();
+
+    if (!cart.length) {
+        delete orders[activeKey];
+    } else {
+        orders[activeKey] = {
+            label: activeLabel,
+            customerName: document.getElementById("customerName").value.trim(),
+            phone: document.getElementById("phone").value.trim(),
+            notes: document.getElementById("notes").value.trim(),
+            payment: selectedPayment,
+            items: cart.map(item => ({ ...item })),
+            total: getTotal(),
+            updatedAt: new Date().toLocaleString()
+        };
+    }
+    return writeTableOrders(orders);
+}
+
+function removeActiveOrder() {
+    if (!activeKey) return;
+    const orders = readTableOrders();
+    delete orders[activeKey];
+    writeTableOrders(orders);
+}
+
+/* TABLE SCREEN */
+function orderSummary(order) {
+    const count = (order.items || []).reduce((sum, item) => sum + Number(item.qty || 0), 0);
+    return count + (count === 1 ? " item" : " items") + " · ₹" + Number(order.total || 0).toFixed(0);
+}
+
+function renderTables() {
+    const orders = readTableOrders();
+    let html = "";
+
+    for (let i = 1; i <= TABLE_COUNT; i++) {
+        const order = orders["T" + i];
+        html += `
+            <button type="button" class="table-tile ${order ? "occupied" : ""}" onclick="openTable('T${i}')">
+                <span class="tile-label">Table</span>
+                <span class="tile-num">${i}</span>
+                <span class="tile-status">${order ? escapeHtml(orderSummary(order)) : "Free"}</span>
+            </button>`;
+    }
+
+    const running = Object.keys(orders).filter(key => key.startsWith("L")).length;
+    html += `
+        <button type="button" class="table-tile line-tile ${running ? "occupied" : ""}" onclick="openLinePanel()">
+            <span class="tile-num">IN LINE</span>
+            <span class="tile-status">${running ? running + " running" : "Takeaway / counter"}</span>
+        </button>`;
+
+    document.getElementById("tablesGrid").innerHTML = html;
+}
+
+function showTablesScreen() {
+    activeKey = null;
+    activeLabel = "";
+    document.getElementById("billingScreen").hidden = true;
+    document.getElementById("tablesScreen").hidden = false;
+    document.getElementById("backBtn").hidden = true;
+    document.getElementById("tableBadge").hidden = true;
+    hideCartDrawer();
+    renderTables();
+    window.scrollTo(0, 0);
+}
+
+function openTable(key) {
+    openBilling(key, "Table " + key.slice(1));
+}
+
+/* IN LINE TOKENS */
+function lineKeys() {
+    return Object.keys(readTableOrders())
+        .filter(key => key.startsWith("L"))
+        .sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
+}
+
+function openLinePanel() {
+    const orders = readTableOrders();
+    const keys = lineKeys();
+
+    document.getElementById("lineList").innerHTML = keys.length
+        ? keys.map(key => `
+            <button type="button" class="line-row" onclick="openLine('${key}')">
+                <span>Line ${key.slice(1)}</span>
+                <span>${escapeHtml(orderSummary(orders[key]))}</span>
+            </button>`).join("")
+        : '<p style="margin:0 0 12px">No running orders. Start a new token.</p>';
+
+    document.getElementById("linePanel").hidden = false;
+}
+
+function closeLinePanel() {
+    document.getElementById("linePanel").hidden = true;
+}
+
+function openLine(key) {
+    openBilling(key, "Line " + key.slice(1));
+}
+
+function newLineToken() {
+    const keys = lineKeys();
+    const next = keys.length ? Number(keys[keys.length - 1].slice(1)) + 1 : 1;
+    openBilling("L" + next, "Line " + next);
+}
+
+/* OPEN BILLING FOR A TABLE / TOKEN */
+function openBilling(key, label) {
+    closeLinePanel();
+    activeKey = key;
+    activeLabel = label;
+
+    const order = readTableOrders()[key];
+    cart = order ? (order.items || []).map(item => ({ ...item })) : [];
+
+    document.getElementById("customerName").value = order ? (order.customerName || "") : "";
+    document.getElementById("phone").value = order ? (order.phone || "") : "";
+    document.getElementById("notes").value = order ? (order.notes || "") : "";
+    selectPayment(order ? (order.payment || "Cash") : "Cash");
+    document.getElementById("tableNumber").value = label;
+
+    document.getElementById("tablesScreen").hidden = true;
+    document.getElementById("billingScreen").hidden = false;
+    document.getElementById("backBtn").hidden = false;
+
+    const badge = document.getElementById("tableBadge");
+    badge.textContent = label;
+    badge.hidden = false;
+
+    renderCart();
+    if (cart.length) showCartDrawer();
+    window.scrollTo(0, 0);
+}
+
+/* LEAVE THE TABLE: keep whatever is in the cart as that table's running order */
+function leaveTable() {
+    if (!saveActiveOrder()) return;
+    cart = [];
+    resetCustomerFields();
+    renderCart();
+    showTablesScreen();
+}
+
+function holdCurrentOrder() {
+    if (!cart.length) {
+        alert("Please add items before holding an order.");
+        return;
+    }
+    leaveTable();
+}
+
+/* NEXT ORDER NUMBER */
+async function getNextOrderNumber() {
+    const { data, error } = await supabaseClient
+        .from("chaat_orders")
+        .select("order_number")
+        .order("order_number", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (error) {
+        console.error(error);
+        throw new Error("Could not get the next order number: " + error.message);
+    }
+
+    if (!data || data.order_number == null) return 1;
+    return Number(data.order_number) + 1;
+}
+
+/* BILL AND PRINT */
+async function billAndPrint() {
+    if (!cart.length) {
+        alert("Please add items to the order.");
+        return;
+    }
+
+    const customerName = document.getElementById("customerName").value.trim();
+    const tableNumber = document.getElementById("tableNumber").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const notes = document.getElementById("notes").value.trim();
+    const total = getTotal();
+
+    const billButton = document.querySelector(".bill");
+    billButton.disabled = true;
+    billButton.textContent = "SAVING...";
+
+    try {
+        const orderNumber = await getNextOrderNumber();
+
+        const orderItems = cart.map(item => ({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            price: item.price,
+            qty: item.qty,
+            subtotal: item.price * item.qty
+        }));
+
+        const { data, error } = await supabaseClient
+            .from("chaat_orders")
+            .insert([{
+                order_number: orderNumber,
+                customer_name: customerName || "Walk-in Customer",
+                table_number: tableNumber || "",
+                items: orderItems,
+                total: total,
+                payment_method: selectedPayment,
+                status: "Pending"
+            }])
+            .select()
+            .single();
+
+        if (error) {
+            console.error(error);
+            alert("Order could not be saved.\n\n" + error.message);
+            return;
+        }
+
+        currentOrderNumber = data.order_number;
+
+        /* The table is freed only after Supabase confirms the bill saved */
+        removeActiveOrder();
+
+        prepareReceipt({
+            orderNumber: data.order_number,
+            customerName: customerName || "Walk-in Customer",
+            tableNumber: tableNumber || "-",
+            phone: phone,
+            total: total,
+            payment: selectedPayment,
+            notes: notes,
+            items: orderItems
+        });
+
+        setTimeout(() => window.print(), 300);
+
+        cart = [];
+        resetCustomerFields();
+        renderCart();
+        showTablesScreen();
+
+    } catch (error) {
+        console.error(error);
+        alert("Something went wrong.\n\n" + error.message);
+    } finally {
+        billButton.disabled = false;
+        billButton.textContent = "BILL & PRINT";
+    }
+}
+
+/* RECEIPT */
+function prepareReceipt(order) {
+    document.getElementById("receiptOrder").textContent = order.orderNumber;
+    document.getElementById("receiptDate").textContent = new Date().toLocaleString();
+    document.getElementById("receiptCustomer").textContent = order.customerName;
+    document.getElementById("receiptTable").textContent = order.tableNumber;
+
+    const phoneRow = document.getElementById("receiptPhoneRow");
+
+    if (order.phone) {
+        phoneRow.style.display = "block";
+        document.getElementById("receiptPhone").textContent = order.phone;
+    } else {
+        phoneRow.style.display = "none";
+    }
+
+    const receiptItems = document.getElementById("receiptItems");
+
+    receiptItems.innerHTML = order.items.map(item => {
+        const price = Number(item.price || 0);
+        const qty = Number(item.qty || 0);
+        const subtotal = price * qty;
+
+        return `
+            <div style="display:block;margin:5px 0;line-height:1.4">
+                <div style="font-weight:bold">${escapeHtml(item.name)}</div>
+                <div style="display:flex;justify-content:space-between">
+                    <span>₹${price.toFixed(0)} × ${qty}</span>
+                    <span>= ₹${subtotal.toFixed(0)}</span>
+                </div>
+            </div>`;
+    }).join("");
+
+    if (order.notes) {
+        receiptItems.innerHTML += `
+            <div style="margin-top:8px">
+                <strong>Note:</strong> ${escapeHtml(order.notes)}
+            </div>`;
+    }
+
+    document.getElementById("receiptTotal").textContent =
+        Number(order.total).toFixed(0);
+
+    document.getElementById("receiptPayment").textContent = order.payment;
+}
+
+/* CLEAR CART */
+function resetCustomerFields() {
+    document.getElementById("customerName").value = "";
+    document.getElementById("tableNumber").value = activeLabel;
+    document.getElementById("phone").value = "";
+    document.getElementById("notes").value = "";
+    selectPayment("Cash");
+}
+
+function clearCart(askConfirmation = true) {
+    if (!cart.length) return;
+
+    if (askConfirmation && !confirm("Clear the current order?")) return;
+
+    cart = [];
+
+    /* Clearing frees this table's running order */
+    removeActiveOrder();
+
+    renderCart();
+    resetCustomerFields();
+}
+
+/* STARTUP */
+document.addEventListener("DOMContentLoaded", function() {
+    selectPayment("Cash");
+    showTablesScreen();
+    loadProducts();
+    subscribeToProductUpdates();
+    renderCart();
+});
+
+/* keep the table grid in step if another tab changes an order */
+window.addEventListener("storage", function(e) {
+    if (e.key === TABLE_ORDERS_KEY && !document.getElementById("tablesScreen").hidden) renderTables();
+});
+</script>
+</body>
+</html>
